@@ -1,0 +1,126 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+                    xmlns:MySampleConverter="clr-namespace:WpfApp_Project_SyncFiles.Converters">
+
+    <!--Icons-->
+    <BitmapImage x:Key="ColorDataGridIcon" UriSource="pack://application:,,,/Images/ColorDataGridIcon.png" />
+    <BitmapImage x:Key="FileDialogIcon" UriSource="pack://application:,,,/Images/FileDialogIcon.png" />
+    <BitmapImage x:Key="LoadingDialogIcon" UriSource="pack://application:,,,/Images/LoadingDialogIcon.png" />
+    <BitmapImage x:Key="MainWindowIcon" UriSource="pack://application:,,,/Images/MainWindowIcon.png" />
+    <BitmapImage x:Key="PeopleDataGridIcon" UriSource="pack://application:,,,/Images/PeopleDataGridIcon.png" />
+    <BitmapImage x:Key="PictureMessageBoxIcon" UriSource="pack://application:,,,/Images/PictureMessageBoxIcon.png" />
+    
+    <!--Converters-->
+    <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
+
+    <!-- Windows -->
+    <Style TargetType="Window">
+        <Setter Property="Background" Value="LightGoldenrodYellow"/>
+        <Setter Property="FontFamily" Value="Arial Rounded MT" />
+        <Setter Property="FontWeight" Value="Thin" />
+    </Style>
+
+    <!--Prevents TextBlock from overiding the Button style-->
+    <DataTemplate DataType="{x:Type sys:String}">
+        <TextBlock Text="{Binding}">
+            <TextBlock.Resources>
+                <Style TargetType="{x:Type TextBlock}"/>
+            </TextBlock.Resources>
+        </TextBlock>
+    </DataTemplate>
+
+    <!--TextBlock Menu Item-->
+    <Style TargetType="TextBlock" x:Key="TextBlockMenuItemStyle">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="Background" Value="LightGreen"/>
+    </Style>
+
+    <!--TextBox-->
+    <Style TargetType="TextBox">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="0,5,0,0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!--TextBlock-->
+    <Style TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!--TextBox Border-->
+    <Style x:Key="TextBoxStyle" TargetType="Border">
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="LightBlue"/>
+    </Style>
+
+    <!--TextBlock Border-->
+    <Style x:Key="TextBlockStyle" TargetType="Border">
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="LightBlue"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="LightCoral"/>
+    </Style>
+
+    <!--Slider-->
+    <Style x:Key="SliderStyle" TargetType="{x:Type Slider}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Slider}">
+                    <Grid VerticalAlignment="Center">
+                        <Border x:Name="borderBackground" Margin="6,0" Height="4" Background="LightCoral" />
+                        <Canvas Margin="0,-4,0,0" VerticalAlignment="Center">
+                            <Border x:Name="PART_SelectionRange" HorizontalAlignment="Left" Height="4" Background="{TemplateBinding Foreground}" />
+                        </Canvas>
+                        <Track x:Name="PART_Track">
+                            <Track.Thumb>
+                                <Thumb Width="10" Height="20" Background="LightBlue"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="IsSelectionRangeEnabled" Value="True" />
+        <Setter Property="SelectionStart" Value="{Binding Minimum, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="SelectionEnd" Value="{Binding Value, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Foreground" Value="LightBlue" />
+    </Style>
+
+    <!--Buttons-->
+    <Style TargetType="Button">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Background" Value="LightBlue"/>
+        <Setter Property="FontFamily" Value="Times New Roman"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="LightCoral"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--Colors-->
+    <Color x:Key="ColorPrimary3">#DAE8FC</Color>
+
+    <!--Brushes-->
+    <SolidColorBrush x:Key="BrushPrimary3" Color="{StaticResource ColorPrimary3}" />
+
+    <!-- TreeViews -->
+    <Style TargetType="TreeView">
+        <Setter Property="Background" Value="{StaticResource BrushPrimary3}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="Height" Value="400" />
+        <Setter Property="Width" Value="350" />
+    </Style>
+</ResourceDictionary>
