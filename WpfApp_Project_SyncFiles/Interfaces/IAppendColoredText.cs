@@ -5,8 +5,8 @@ namespace WpfApp_Project_SyncFiles.Interfaces
 {
     public interface IAppendColoredText
     {
-        void SetRichTextBox(TextBlock textBlock);
+        public void SetTextBock(TextBlock textBlock);
 
-        void AppendColoredText(string message, Color color);
+        public void AppendText(string message);
     }
 }

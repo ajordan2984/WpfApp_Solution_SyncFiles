@@ -1,29 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WpfApp_Project_SyncFiles.Interfaces;
+﻿using WpfApp_Project_SyncFiles.Interfaces;
+using Microsoft.Win32;
+using System.IO;
 
 namespace WpfApp_Project_SyncFiles.Services
 { 
     public class FolderDialogService : IFolderDialogService
     {
-        public string ShowFolderDialog(string initialPath)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.SelectedPath = initialPath;
-                dialog.Description = "Select a folder";
-                dialog.ShowNewFolderButton = true;
+        private string _selectedFolder = null;
 
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    return dialog.SelectedPath;
-                }
+
+        public string ShowFolderDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select a folder",
+                CheckFileExists = false,
+                CheckPathExists = true,
+                FileName = "Select Folder"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _selectedFolder = Path.GetDirectoryName(openFileDialog.FileName);
             }
-            return null; // Return null if no folder is selected
+            return _selectedFolder;
         }
     }
 }

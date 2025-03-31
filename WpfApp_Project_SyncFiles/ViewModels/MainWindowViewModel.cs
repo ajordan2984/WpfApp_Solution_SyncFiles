@@ -8,13 +8,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Interfaces;
 using WpfApp_Project_SyncFiles.Commands;
 using System.Windows.Controls;
-//using WpfApp_Project_SyncFiles.Interfaces;
-//using WpfApp_Project_SyncFiles.Models;
-//using WpfApp_Project_SyncFiles.Views;
 
 namespace WpfApp_Project_SyncFiles.ViewModels
 {
@@ -24,7 +20,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel()
         {
-            UpdateCommandBrowse = new ButtonCommands(Save());
+            UpdateCommandBrowse = new ButtonCommands(Save);
             _Door = new object();
             _isBusy = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -84,23 +80,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         #endregion
 
         #region Button Executions
-        public void selectDirectory(IAppendColoredText iact, TextBlock rtb, TextBox tb)
-        {
-            using (var fbd = new FolderBrowserDialog())
-            {
-                DialogResult result = fbd.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath) && Directory.Exists(fbd.SelectedPath))
-                {
-                    tb.Text = fbd.SelectedPath;
-                }
-                else
-                {
-                    iact.AppendColoredText("Error: Please select a folder.", System.Drawing.Color.Red);
-                    tb.Text = "";
-                }
-            }
-        }
         public void ConvertPicture()
         {
             try

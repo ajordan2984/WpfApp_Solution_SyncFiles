@@ -11,9 +11,6 @@
     <BitmapImage x:Key="PeopleDataGridIcon" UriSource="pack://application:,,,/Images/PeopleDataGridIcon.png" />
     <BitmapImage x:Key="PictureMessageBoxIcon" UriSource="pack://application:,,,/Images/PictureMessageBoxIcon.png" />
     
-    <!--Converters-->
-    <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
-
     <!-- Windows -->
     <Style TargetType="Window">
         <Setter Property="Background" Value="LightGoldenrodYellow"/>

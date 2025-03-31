@@ -8,22 +8,28 @@ namespace WpfApp_Project_SyncFiles.HelperClasses
 {
     public class ErrorCheck : IErrorCheck
     {
+        IFolderDialogService _FDS;
+
         public ErrorCheck()
         {
         }
 
+        public void SetFolderDialogService(IFolderDialogService folderDialogService)
+        {
+            _FDS = folderDialogService;
+        }
+
         void IErrorCheck.selectDirectory(IAppendColoredText iact, TextBlock rtb, TextBox tb)
         {
-            using var fbd = new System.Windows.Forms.FolderBrowserDialog();
-            DialogResult result = fbd.ShowDialog();
+            string result = _FDS.ShowFolderDialog();
 
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath) && Directory.Exists(fbd.SelectedPath))
+            if (!string.IsNullOrWhiteSpace(result) && Directory.Exists(result))
             {
-                tb.Text = fbd.SelectedPath;
+                tb.Text = result;
             }
             else
             {
-                iact.AppendColoredText("Error: Please select a folder.", Color.Red);
+                iact.AppendText("Error: Please select a folder.");
                 tb.Text = "";
             }
         }
