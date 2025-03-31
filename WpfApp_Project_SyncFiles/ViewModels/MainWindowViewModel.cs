@@ -4,13 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using WpfApp_Project_SyncFiles.Interfaces;
 using WpfApp_Project_SyncFiles.Commands;
-using System.Windows.Controls;
+using WpfApp_Project_SyncFiles.ViewModels;
+using WpfApp_Project_SyncFiles.Views;
 
 namespace WpfApp_Project_SyncFiles.ViewModels
 {
@@ -20,14 +19,19 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel()
         {
-            UpdateCommandBrowse = new ButtonCommands(Save);
+            UpdateCommandBrowseExternalDrive1 = new ButtonCommands(Browse);
+            UpdateCommandBrowseExternalDrive2 = new ButtonCommands(Browse);
+            UpdateCommandBrowseExternalDrive3 = new ButtonCommands(Browse);
+            UpdateCommandBrowseExternalDrive4 = new ButtonCommands(Browse);
             _Door = new object();
             _isBusy = false;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         #region Private Members
-        private static string _SelectedPath = null;
+        private static string _ExternalDrive1Path = null;
+        private static string _ExternalDrive2Path = null;
+        private static string _ExternalDrive3Path = null;
+        private static string _ExternalDrive4Path = null;
 
         // Used for thread safety
         private static object _Door;
@@ -35,169 +39,202 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         #endregion
 
         #region Public Properties
-        //public string FromSelectedColorHex
-        //{
-        //    get
-        //    {
-        //        return _FromSelectedColorHex;
-        //    }
-        //    set
-        //    {
-        //        _FromSelectedColorHex = value;
-        //        PropertyChanged(this, new PropertyChangedEventArgs(nameof(FromSelectedColorHex)));
-        //    }
-        //}
-        //public string ToSelectedColorHex
-        //{
-        //    get
-        //    {
-        //        return _ToSelectedColorHex;
-        //    }
-        //    set
-        //    {
-        //        _ToSelectedColorHex = value;
-        //        PropertyChanged(this, new PropertyChangedEventArgs(nameof(ToSelectedColorHex)));
-        //    }
-        //}
-        public string SelectedPath
+        public string ExternalDrive1Path
         {
             get
             {
-                return _SelectedPath;
+                return _ExternalDrive1Path;
             }
             set
             {
-                _SelectedPath = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedPath)));
+                _ExternalDrive1Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive1Path)));
             }
         }
-  
+        public string ExternalDrive2Path
+        {
+            get
+            {
+                return _ExternalDrive2Path;
+            }
+            set
+            {
+                _ExternalDrive2Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive2Path)));
+            }
+        }
+        public string ExternalDrive3Path
+        {
+            get
+            {
+                return _ExternalDrive3Path;
+            }
+            set
+            {
+                _ExternalDrive3Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive3Path)));
+            }
+        }
+        public string ExternalDrive4Path
+        {
+            get
+            {
+                return _ExternalDrive4Path;
+            }
+            set
+            {
+                _ExternalDrive4Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive4Path)));
+            }
+        }
+
         #endregion
 
 
         #region Button Clicks (Commands)
-        public ICommand UpdateCommandBrowse { get; private set; }
+        public ICommand UpdateCommandBrowseExternalDrive1 { get; private set; }
+        public ICommand UpdateCommandBrowseExternalDrive2 { get; private set; }
+        public ICommand UpdateCommandBrowseExternalDrive3 { get; private set; }
+        public ICommand UpdateCommandBrowseExternalDrive4 { get; private set; }
+
         #endregion
 
         #region Button Executions
-        public void ConvertPicture()
+        public void Browse()
         {
-            try
+            var childView = new FileDialogView();
+            var childModel = new FileDialogViewModel(childView.Close);
+            childView.DataContext = childModel;
+            childView.ShowDialog();
+
+            if (childModel.FileDialogTree.SelectedItem != null)
             {
-                lock (_Door)
-                {
-                    if (_isBusy)
-                    {
-                        MessageBox.Show("Please wait while image is converted.", "Alert");
-                        return;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(_SelectedPath))
-                {
-                    MessageBox.Show("Please select a picture to convert.", "Alert");
-                    return;
-                }
-
-                if (!File.Exists(_SelectedPath))
-                {
-                    MessageBox.Show("The file path to selected picture is not valid. Please check the file.", "Alert");
-                    return;
-                }
-
-                // Disable the buttons
-                CanExecuteButtons(false);
-
-                // Get the picture
-                //_Bitmap = (Bitmap)Image.FromFile(_SelectedPath);
-
-                //var childView = new LoadingDialogView();
-                //ILoadingDialog loadingDialog = new LoadingDialogViewModel(_Bitmap.Width, childView.Close);
-                //childView.DataContext = loadingDialog;
-                //childView.Show();
-
-                Task.Run(() =>
-                {
-                    lock (_Door)
-                    {
-                        _isBusy = true;
-                    }
-
-                    lock (_Door)
-                    {
-                        _isBusy = false;
-                    }
-
-                    // Creates a bridge to access another thread
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        // Enable the buttons
-                        CanExecuteButtons(true);
-                    });
-                });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
+                ExternalDrive1Path = childModel.FileDialogTree.SelectedItem.FullPath;
             }
         }
-        public void Clear()
-        {
-            lock (_Door)
-            {
-                if (_isBusy)
-                {
-                    MessageBox.Show("Please wait while image is converted.", "Alert");
-                    return;
-                }
-            }
 
-            SelectedPath = null;
-        }
-        public void Save()
-        {
-            try
-            {
-                lock (_Door)
-                {
-                    if (_isBusy)
-                    {
-                        MessageBox.Show("Please wait while image is converted.", "Alert");
-                        return;
-                    }
-                }
 
-                //if (_Bitmap == null)
-                //{
-                //    MessageBox.Show("Please convert an image to save the results.", "Alert");
-                //}
-                //else
-                //{
-                //    SaveFileDialog dialog = new SaveFileDialog
-                //    {
-                //        Filter = "BMP | *.bmp | GIF | *.gif | JPG | *.jpg; *.jpeg | PNG | *.png | TIFF | *.tif; *.tiff"
-                //    };
 
-                //    if (dialog.ShowDialog() == true)
-                //    {
-                //        _Bitmap.Save(dialog.FileName);
 
-                //        // Declare child view
-                //        PictureMessageBoxView childView = new PictureMessageBoxView();
-                //        // Declare and set child model
-                //        PictureMessageBoxViewModel childModel = new PictureMessageBoxViewModel(dialog.FileName, "The converted picture was saved!", childView.Close);
-                //        // Set the data context of the child view
-                //        childView.DataContext = childModel;
-                //        // Display the child view to the user
-                //        childView.Show();
-                //    }
-                //}
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex.Message);
-            }
-        }
+
+        //public void ConvertPicture()
+        //{
+        //    try
+        //    {
+        //        lock (_Door)
+        //        {
+        //            if (_isBusy)
+        //            {
+        //                MessageBox.Show("Please wait while image is converted.", "Alert");
+        //                return;
+        //            }
+        //        }
+
+        //        if (string.IsNullOrEmpty(_SelectedPath))
+        //        {
+        //            MessageBox.Show("Please select a picture to convert.", "Alert");
+        //            return;
+        //        }
+
+        //        if (!File.Exists(_SelectedPath))
+        //        {
+        //            MessageBox.Show("The file path to selected picture is not valid. Please check the file.", "Alert");
+        //            return;
+        //        }
+
+        //        // Disable the buttons
+        //        CanExecuteButtons(false);
+
+        //        // Get the picture
+        //        //_Bitmap = (Bitmap)Image.FromFile(_SelectedPath);
+
+        //        //var childView = new LoadingDialogView();
+        //        //ILoadingDialog loadingDialog = new LoadingDialogViewModel(_Bitmap.Width, childView.Close);
+        //        //childView.DataContext = loadingDialog;
+        //        //childView.Show();
+
+        //        Task.Run(() =>
+        //        {
+        //            lock (_Door)
+        //            {
+        //                _isBusy = true;
+        //            }
+
+        //            lock (_Door)
+        //            {
+        //                _isBusy = false;
+        //            }
+
+        //            // Creates a bridge to access another thread
+        //            App.Current.Dispatcher.Invoke(() =>
+        //            {
+        //                // Enable the buttons
+        //                CanExecuteButtons(true);
+        //            });
+        //        });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //}
+        //public void Clear()
+        //{
+        //    lock (_Door)
+        //    {
+        //        if (_isBusy)
+        //        {
+        //            MessageBox.Show("Please wait while image is converted.", "Alert");
+        //            return;
+        //        }
+        //    }
+
+        //    SelectedPath = null;
+        //}
+        //public void Save()
+        //{
+        //    try
+        //    {
+        //        lock (_Door)
+        //        {
+        //            if (_isBusy)
+        //            {
+        //                MessageBox.Show("Please wait while image is converted.", "Alert");
+        //                return;
+        //            }
+        //        }
+
+        //        //if (_Bitmap == null)
+        //        //{
+        //        //    MessageBox.Show("Please convert an image to save the results.", "Alert");
+        //        //}
+        //        //else
+        //        //{
+        //        //    SaveFileDialog dialog = new SaveFileDialog
+        //        //    {
+        //        //        Filter = "BMP | *.bmp | GIF | *.gif | JPG | *.jpg; *.jpeg | PNG | *.png | TIFF | *.tif; *.tiff"
+        //        //    };
+
+        //        //    if (dialog.ShowDialog() == true)
+        //        //    {
+        //        //        _Bitmap.Save(dialog.FileName);
+
+        //        //        // Declare child view
+        //        //        PictureMessageBoxView childView = new PictureMessageBoxView();
+        //        //        // Declare and set child model
+        //        //        PictureMessageBoxViewModel childModel = new PictureMessageBoxViewModel(dialog.FileName, "The converted picture was saved!", childView.Close);
+        //        //        // Set the data context of the child view
+        //        //        childView.DataContext = childModel;
+        //        //        // Display the child view to the user
+        //        //        childView.Show();
+        //        //    }
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.Write(ex.Message);
+        //    }
+        //}
         #endregion
 
         #region Helper Functions
@@ -304,10 +341,10 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         //    childView.Show();
         //}
 
-        private void CanExecuteButtons(bool enabled)
-        {
-            UpdateCommandBrowse.CanExecute(enabled);
-        }
+        //private void CanExecuteButtons(bool enabled)
+        //{
+        //    UpdateCommandBrowse.CanExecute(enabled);
+        //}
         #endregion
     }
 }

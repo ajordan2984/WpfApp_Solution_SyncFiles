@@ -23,9 +23,9 @@ namespace WpfApp_Project_SyncFiles.Commands
 
         public bool CanExecute(object parameter)
         {
-            if (parameter != null)
+            if (parameter is bool boolParameter)
             {
-                canExecute = (bool)parameter;
+                canExecute = boolParameter;
             }
 
             return canExecute;

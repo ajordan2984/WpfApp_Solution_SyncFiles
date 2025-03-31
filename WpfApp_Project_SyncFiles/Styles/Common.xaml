@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-                    xmlns:MySampleConverter="clr-namespace:WpfApp_Project_SyncFiles.Converters">
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!--Icons-->
     <BitmapImage x:Key="ColorDataGridIcon" UriSource="pack://application:,,,/Images/ColorDataGridIcon.png" />

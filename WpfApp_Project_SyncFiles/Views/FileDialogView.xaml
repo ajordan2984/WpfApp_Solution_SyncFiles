@@ -1,0 +1,51 @@
+﻿<Window x:Class="WpfApp_Project_SyncFiles.Views.FileDialogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:WpfApp_Project_SyncFiles.Models"
+        Title="Select Picture" Name="Window" Height="400" Width="400" Icon="{StaticResource FileDialogIcon}">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+
+        <TreeView Grid.Row="1" Width="auto" Height="auto" ItemsSource="{Binding FileDialogTree.Drives}" >
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type models:FolderNodeModel}" ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="40" Height="40" Source="{Binding FolderIcon, Converter={StaticResource PathToBitmapImageConverter}}"/>
+                        <TextBox BorderThickness="0" Text="{Binding Name}" IsReadOnly="True"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type models:FileNodeModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding FullPath, Converter={StaticResource PathToBitmapImageConverter}}"/>
+                        <TextBox BorderThickness="0" Text="{Binding Name}" IsReadOnly="True" />
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Command="{Binding UpdateCommandSelectPicture}" Width="100" ToolTip="Opens the selected picture into the application.">
+                Select Picture
+            </Button>
+
+            <Button Grid.Column="1" Command="{Binding UpdateCommandCloseWindow}" Content="Close" IsCancel="True" Width="100" ToolTip="Closes the window." />
+        </Grid>
+    </Grid>
+</Window>

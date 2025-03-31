@@ -8,11 +8,18 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
+	<Folder Include="Converters\" />
     <Folder Include="Images\" />
+	<Folder Include="Interfaces\" /> 
     <Folder Include="Models\" />
+	<Folder Include="Services\" />
+	<Folder Include="Styles\" />
     <Folder Include="ViewModels\" />
-    <Folder Include="Views\" />
-    <Folder Include="Styles\" />
+	<Folder Include="Views\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
   </ItemGroup>
 
 </Project>
