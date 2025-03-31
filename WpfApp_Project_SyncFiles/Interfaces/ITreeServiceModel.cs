@@ -7,7 +7,6 @@ namespace WpfApp_Project_SyncFiles.Interfaces
         ObservableCollection<ITreeNodeModel> Drives { get; set; }
         ITreeNodeModel SelectedItem { get; }
         void AddFolder(string name = "NewFolder");
-        void AddFile(string name = "NewFile");
         void MoveFolder();
         void MoveFile();
         void NewTree();

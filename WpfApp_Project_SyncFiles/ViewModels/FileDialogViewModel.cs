@@ -16,13 +16,13 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             UpdateCommandCloseWindow = new ButtonCommands(windowClose);
             UpdateCommandSelectPicture = new ButtonCommands(() =>
             {
-                if (FileDialogTree.SelectedItem != null && FileDialogTree.SelectedItem.GetType() == typeof(FileNodeModel))
+                if (FileDialogTree.SelectedItem != null && FileDialogTree.SelectedItem.GetType() == typeof(FolderNodeModel))
                 {
                     windowClose();
                 }
                 else
                 {
-                    MessageBox.Show("Please select a picture", "Alert");
+                    MessageBox.Show("Please select a folder", "Alert");
                 }
             });
         }

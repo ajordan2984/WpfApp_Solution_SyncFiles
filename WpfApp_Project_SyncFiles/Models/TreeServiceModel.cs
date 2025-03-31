@@ -46,11 +46,11 @@ namespace WpfApp_Project_SyncFiles.Models
 
         public void AddFile(string name = "NewFile")
         {
-            if (SelectedItem != null && SelectedItem.GetType() == typeof(FolderNodeModel))
-            {
-                var folder = (FolderNodeModel)SelectedItem;
-                folder.Children.Add(new FileNodeModel(name, (FolderNodeModel)SelectedItem, folder.LinkToTree));
-            }
+            //if (SelectedItem != null && SelectedItem.GetType() == typeof(FolderNodeModel))
+            //{
+            //    var folder = (FolderNodeModel)SelectedItem;
+            //    folder.Children.Add(new FileNodeModel(name, (FolderNodeModel)SelectedItem, folder.LinkToTree));
+            //}
         }
 
         public void AddFolder(string name = "NewFolder")

@@ -151,9 +151,6 @@ namespace WpfApp_Project_SyncFiles.Models
         {
             try
             {
-                // Create list to filter out all the files that are not pictures
-                List<string> filter = ConfigurationManager.AppSettings["pictureFileFilter"].Split(',').ToList();
-
                 // Skips the exception of trying to get files out of a folder the user does not have access to
                 var badFolder = false;
 
@@ -174,26 +171,26 @@ namespace WpfApp_Project_SyncFiles.Models
                 #endregion
 
                 #region Get Files
-                try
-                {
-                    // Prevents an exception from being rethrown and saves time
-                    if (!badFolder)
-                    {
-                        // Add all the files as the last operation
-                        foreach (var file in Directory.GetFiles(FullPath))
-                        {
-                            // Only add picture files
-                            if (filter.Contains(Path.GetExtension(file).ToLower()))
-                            {
-                                Children.Add(new FileNodeModel(file, Path.GetFileName(file), this, LinkToTree));
-                            }
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    // Log exception
-                }
+                //try
+                //{
+                //    // Prevents an exception from being rethrown and saves time
+                //    if (!badFolder)
+                //    {
+                //        // Add all the files as the last operation
+                //        foreach (var file in Directory.GetFiles(FullPath))
+                //        {
+                //            // Only add picture files
+                //            if (filter.Contains(Path.GetExtension(file).ToLower()))
+                //            {
+                //                Children.Add(new FileNodeModel(file, Path.GetFileName(file), this, LinkToTree));
+                //            }
+                //        }
+                //    }
+                //}
+                //catch (Exception)
+                //{
+                //    // Log exception
+                //}
                 #endregion
             }
             catch (Exception)

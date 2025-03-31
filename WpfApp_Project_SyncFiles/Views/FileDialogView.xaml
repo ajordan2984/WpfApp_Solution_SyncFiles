@@ -41,7 +41,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Command="{Binding UpdateCommandSelectPicture}" Width="100" ToolTip="Opens the selected picture into the application.">
+            <Button Grid.Column="0" Command="{Binding UpdateCommandSelectPicture}" Width="100" ToolTip="Selects the folder to sync.">
                 Select Picture
             </Button>
 
