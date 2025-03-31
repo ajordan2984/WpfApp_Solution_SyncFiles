@@ -7,19 +7,39 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\ColorDataGridIcon.png" />
+    <None Remove="Images\FileDialogIcon.png" />
+    <None Remove="Images\FolderClosed.png" />
+    <None Remove="Images\FolderOpen.png" />
+    <None Remove="Images\LoadingDialogIcon.png" />
+    <None Remove="Images\MainWindowIcon.png" />
+    <None Remove="Images\PeopleDataGridIcon.png" />
+    <None Remove="Images\PictureMessageBoxIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Commands\" />
 	<Folder Include="Converters\" />
-    <Folder Include="Images\" />
 	<Folder Include="Interfaces\" /> 
     <Folder Include="Models\" />
 	<Folder Include="Services\" />
 	<Folder Include="Styles\" />
     <Folder Include="ViewModels\" />
-	<Folder Include="Views\"/>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\ColorDataGridIcon.png" />
+    <Resource Include="Images\FileDialogIcon.png" />
+    <Resource Include="Images\FolderClosed.png" />
+    <Resource Include="Images\FolderOpen.png" />
+    <Resource Include="Images\LoadingDialogIcon.png" />
+    <Resource Include="Images\MainWindowIcon.png" />
+    <Resource Include="Images\PeopleDataGridIcon.png" />
+    <Resource Include="Images\PictureMessageBoxIcon.png" />
   </ItemGroup>
 
 </Project>

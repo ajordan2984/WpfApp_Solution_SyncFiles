@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                   xmlns:MySampleConverter="clr-namespace:WpfApp_Project_SyncFiles.Converters">
 
     <!--Icons-->
     <BitmapImage x:Key="ColorDataGridIcon" UriSource="pack://application:,,,/Images/ColorDataGridIcon.png" />
@@ -9,7 +10,9 @@
     <BitmapImage x:Key="MainWindowIcon" UriSource="pack://application:,,,/Images/MainWindowIcon.png" />
     <BitmapImage x:Key="PeopleDataGridIcon" UriSource="pack://application:,,,/Images/PeopleDataGridIcon.png" />
     <BitmapImage x:Key="PictureMessageBoxIcon" UriSource="pack://application:,,,/Images/PictureMessageBoxIcon.png" />
-    
+
+    <!--Converters-->
+    <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
     <!-- Windows -->
     <Style TargetType="Window">
         <Setter Property="Background" Value="LightGoldenrodYellow"/>
