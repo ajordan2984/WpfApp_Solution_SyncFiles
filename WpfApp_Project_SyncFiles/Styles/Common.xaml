@@ -43,12 +43,16 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
-    <!--TextBlock-->
-    <!--<Style TargetType="TextBlock">
-        <Setter Property="TextAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="15"/>
-        <Setter Property="Background" Value="Transparent"/>
-    </Style>-->
+    <!--TextBox Border-->
+    <Style x:Key="TextBoxHeader" TargetType="Border">
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="SnapsToDevicePixels" Value="False"/>
+        <Setter Property="Background" Value="BlanchedAlmond"/>
+        <Setter Property="Margin" Value="0,0,10,5"/>
+    </Style>
 
     <!--TextBox Border-->
     <Style x:Key="TextBoxStyle" TargetType="Border">
@@ -61,15 +65,23 @@
         <Setter Property="Margin" Value="0,0,10,5"/>
     </Style>
 
+    <!--TextBlock-->
+    <Style TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
     <!--TextBlock Border-->
-    <!--<Style x:Key="TextBlockStyle" TargetType="Border">
+    <Style x:Key="TextBlockStyle" TargetType="Border">
         <Setter Property="Padding" Value="2"/>
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="LightBlue"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Background" Value="LightCoral"/>
-    </Style>-->
+        <Setter Property="Margin" Value="5,0,5,5"/>
+    </Style>
 
     <!--Slider-->
     <Style x:Key="SliderStyle" TargetType="{x:Type Slider}">

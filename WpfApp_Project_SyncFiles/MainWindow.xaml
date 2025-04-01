@@ -5,62 +5,99 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Project_SyncFiles"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1000">
-    <Grid>
+        Title="MainWindow" Height="720" Width="1000">
+    <Grid Height="700" VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="25*" />
-            <ColumnDefinition Width="25*" />
-            <ColumnDefinition Width="25*" />
-            <ColumnDefinition Width="25*" />
+            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="20*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="100*" />
+            <RowDefinition Height="100*" />
+            <RowDefinition Height="100*" />
+            <RowDefinition Height="100*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="70*" />
+            <RowDefinition Height="70*" />
         </Grid.RowDefinitions>
 
         <!--Buttons-->
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="5">
+        <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="1">
+            PC Folder
+        </Button>
+
+        <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="6">
             External Drive 1
         </Button>
-        <Button Command="{Binding UpdateCommandConvert}" Grid.Column="0" Grid.Row="6">
+
+        <Button Command="{Binding UpdateCommandConvert}" Grid.Column="0" Grid.Row="7">
             External Drive 2
         </Button>
-        <Button Command="{Binding UpdateCommandClear}" Grid.Column="0" Grid.Row="7">
+
+        <Button Command="{Binding UpdateCommandClear}" Grid.Column="0" Grid.Row="8">
             External Drive 3
         </Button>
-        <Button Command="{Binding UpdateCommandSave}" Grid.Column="0" Grid.Row="8">
+
+        <Button Command="{Binding UpdateCommandSave}" Grid.Column="0" Grid.Row="9">
             External Drive 4
         </Button>
 
+        <Button Command="{Binding UpdateCommandSave}" Grid.Column="0" Grid.Row="10">
+            Sync Files
+        </Button>
+
         <!--Textboxes-->
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="5"
+        <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <TextBox Text="Please select a folder from your PC that you would like synced across the external drives" 
+                     HorizontalAlignment="Stretch" 
+                     VerticalAlignment="Stretch" 
+                     TextAlignment="Center"
+                     IsReadOnly="True"/>
+        </Border>
+
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TextBox Text="{Binding Path=ExternalDrive1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="6"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive2Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalDrive1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="7"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive3Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalDrive2Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="8"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TextBox Text="{Binding Path=ExternalDrive3Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Border>
+
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TextBox Text="{Binding Path=ExternalDrive4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Border>
+        
+        <!--TextBlock-->
+        <Border Style="{StaticResource TextBlockStyle}" 
+                Grid.Column="0" 
+                Grid.ColumnSpan="4" 
+                Grid.Row="2"
+                Grid.RowSpan="4"
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch">
+            <TextBlock Text="{Binding Path=ExternalDrive4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
 
