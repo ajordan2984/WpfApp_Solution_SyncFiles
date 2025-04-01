@@ -67,7 +67,7 @@
 
     <!--TextBlock-->
     <Style TargetType="TextBlock">
-        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="TextAlignment" Value="Left"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="Background" Value="Transparent"/>
     </Style>

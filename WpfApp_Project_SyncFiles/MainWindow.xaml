@@ -102,7 +102,7 @@
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <TextBlock Text="{Binding Path=Message}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </ScrollViewer>
         </Border>
 

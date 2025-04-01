@@ -8,10 +8,15 @@ namespace WpfApp_Project_SyncFiles
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly MainWindowViewModel _viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+
+            _viewModel = new MainWindowViewModel(Dispatcher);
+            DataContext = _viewModel;
+            Loaded += async (s, e) => await _viewModel.StartTasksAsync();
         }
     }
 }

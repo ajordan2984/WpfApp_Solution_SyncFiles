@@ -1,5 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using WpfApp_Project_SyncFiles.Commands;
 using WpfApp_Project_SyncFiles.Views;
 
@@ -9,13 +14,14 @@ namespace WpfApp_Project_SyncFiles.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(Dispatcher dispatcher)
         {
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
             UpdateCommandBrowseExternalDrive1 = new RelayCommand(execute => Browse("ExternalDrive1Path"));
             UpdateCommandBrowseExternalDrive2 = new RelayCommand(execute => Browse("ExternalDrive2Path"));
             UpdateCommandBrowseExternalDrive3 = new RelayCommand(execute => Browse("ExternalDrive3Path"));
             UpdateCommandBrowseExternalDrive4 = new RelayCommand(execute => Browse("ExternalDrive4Path"));
+            _dispatcher = dispatcher;
         }
 
         #region Private Members
@@ -24,9 +30,23 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private static string _ExternalDrive2Path = null;
         private static string _ExternalDrive3Path = null;
         private static string _ExternalDrive4Path = null;
+        private string _statusText = null;
+        private readonly Dispatcher _dispatcher;
+        private readonly ConcurrentQueue<string> _messageQueue = new();
+        private StringBuilder _textBuilder = new();
         #endregion
 
+
         #region Public Properties
+        public string StatusText
+        {
+            get => _statusText;
+            set
+            {
+                _statusText = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(StatusText)));
+            }
+        }
         public string PcPath
         {
             get
@@ -134,5 +154,40 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
         }
         #endregion
+
+        public async Task StartTasksAsync()
+        {
+            var tasks = new Task[100];
+
+            for (int i = 0; i < 100; i++)
+            {
+                int taskId = i + 1;
+                tasks[i] = Task.Run(async () =>
+                {
+                    for (int j = 1; j <= 5; j++) // Each task updates 5 times
+                    {
+                        await Task.Delay(new Random().Next(100, 500)); // Simulate random work
+                        string message = $"Task {taskId} - Update {j}" + Environment.NewLine;
+
+                        _messageQueue.Enqueue(message); // Thread-safe queue
+                        UpdateUI();
+                    }
+                });
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        private void UpdateUI()
+        {
+            _dispatcher.Invoke(() =>
+            {
+                if (_messageQueue.TryDequeue(out string newMessage))
+                {
+                    _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine + Environment.NewLine); // Append the text
+                    StatusText = _textBuilder.ToString();
+                }
+            });
+        }
     }
 }

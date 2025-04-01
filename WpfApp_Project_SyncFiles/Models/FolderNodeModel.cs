@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 using WpfApp_Project_SyncFiles.Interfaces;
 
 namespace WpfApp_Project_SyncFiles.Models
@@ -168,29 +165,6 @@ namespace WpfApp_Project_SyncFiles.Models
                     // Log exception
                     badFolder = true;
                 }
-                #endregion
-
-                #region Get Files
-                //try
-                //{
-                //    // Prevents an exception from being rethrown and saves time
-                //    if (!badFolder)
-                //    {
-                //        // Add all the files as the last operation
-                //        foreach (var file in Directory.GetFiles(FullPath))
-                //        {
-                //            // Only add picture files
-                //            if (filter.Contains(Path.GetExtension(file).ToLower()))
-                //            {
-                //                Children.Add(new FileNodeModel(file, Path.GetFileName(file), this, LinkToTree));
-                //            }
-                //        }
-                //    }
-                //}
-                //catch (Exception)
-                //{
-                //    // Log exception
-                //}
                 #endregion
             }
             catch (Exception)
