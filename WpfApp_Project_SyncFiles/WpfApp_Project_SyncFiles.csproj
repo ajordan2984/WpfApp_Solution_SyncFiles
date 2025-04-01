@@ -18,9 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-	<Folder Include="Converters\" />
-	<Folder Include="Interfaces\" /> 
+	<Folder Include="Converters\" /> 
     <Folder Include="Models\" />
 	<Folder Include="Services\" />
 	<Folder Include="Styles\" />

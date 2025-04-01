@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Project_SyncFiles"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1000">
+        Title="MainWindow" Height="735" Width="1000" ResizeMode="CanMinimize">
     <Grid Height="700" VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
@@ -30,7 +30,7 @@
         </Grid.RowDefinitions>
 
         <!--Buttons-->
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="1">
+        <Button Command="{Binding UpdateCommandBrowsePcPath}" Grid.Column="0" Grid.Row="1">
             PC Folder
         </Button>
 
@@ -38,20 +38,24 @@
             External Drive 1
         </Button>
 
-        <Button Command="{Binding UpdateCommandConvert}" Grid.Column="0" Grid.Row="7">
+        <Button Command="{Binding UpdateCommandBrowseExternalDrive2}" Grid.Column="0" Grid.Row="7">
             External Drive 2
         </Button>
 
-        <Button Command="{Binding UpdateCommandClear}" Grid.Column="0" Grid.Row="8">
+        <Button Command="{Binding UpdateCommandBrowseExternalDrive3}" Grid.Column="0" Grid.Row="8">
             External Drive 3
         </Button>
 
-        <Button Command="{Binding UpdateCommandSave}" Grid.Column="0" Grid.Row="9">
+        <Button Command="{Binding UpdateCommandBrowseExternalDrive4}" Grid.Column="0" Grid.Row="9">
             External Drive 4
         </Button>
 
-        <Button Command="{Binding UpdateCommandSave}" Grid.Column="0" Grid.Row="10">
+        <Button Grid.Column="1" Grid.Row="10">
             Sync Files
+        </Button>
+
+        <Button Grid.Column="2" Grid.Row="10">
+            Clear Log
         </Button>
 
         <!--Textboxes-->
@@ -66,7 +70,7 @@
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=PcPath}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="6"
@@ -88,7 +92,7 @@
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TextBox Text="{Binding Path=ExternalDrive4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
-        
+
         <!--TextBlock-->
         <Border Style="{StaticResource TextBlockStyle}" 
                 Grid.Column="0" 
@@ -97,7 +101,9 @@
                 Grid.RowSpan="4"
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch">
-            <TextBlock Text="{Binding Path=ExternalDrive4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <TextBlock Text="{Binding Path=Message}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </ScrollViewer>
         </Border>
 
 

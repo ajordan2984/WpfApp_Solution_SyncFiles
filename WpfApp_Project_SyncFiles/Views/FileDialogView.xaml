@@ -41,8 +41,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Command="{Binding UpdateCommandSelectPicture}" Width="100" ToolTip="Selects the folder to sync.">
-                Select Picture
+            <Button Grid.Column="0" Command="{Binding UpdateCommandSelectFolder}" Width="100" ToolTip="Selects the folder to sync.">
+                Select Folder
             </Button>
 
             <Button Grid.Column="1" Command="{Binding UpdateCommandCloseWindow}" Content="Close" IsCancel="True" Width="100" ToolTip="Closes the window." />

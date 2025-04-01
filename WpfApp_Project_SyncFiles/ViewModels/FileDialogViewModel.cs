@@ -13,8 +13,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         public FileDialogViewModel(Action windowClose)
         {
             FileDialogTree = new TreeServiceModel();
-            UpdateCommandCloseWindow = new ButtonCommands(windowClose);
-            UpdateCommandSelectPicture = new ButtonCommands(() =>
+            UpdateCommandCloseWindow = new RelayCommand(execute => windowClose());
+            UpdateCommandSelectFolder = new RelayCommand(execute =>
             {
                 if (FileDialogTree.SelectedItem != null && FileDialogTree.SelectedItem.GetType() == typeof(FolderNodeModel))
                 {
@@ -30,7 +30,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         #region Button Clicks (Commands)
         public ICommand UpdateCommandCloseWindow { get; private set; }
-        public ICommand UpdateCommandSelectPicture { get; private set; }
+        public ICommand UpdateCommandSelectFolder { get; private set; }
         #endregion
 
         #region Public Members

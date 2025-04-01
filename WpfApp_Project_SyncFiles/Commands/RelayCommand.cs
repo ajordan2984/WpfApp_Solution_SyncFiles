@@ -3,19 +3,19 @@ using System.Windows.Input;
 
 namespace WpfApp_Project_SyncFiles.Commands
 {
-    class ButtonCommands : ICommand
+    class RelayCommand : ICommand
     {
-        private Action _function;
-        private bool canExecute;
+        private Action<object> _execute;
+        private Func<object, bool> _canExecute;
 
-        public ButtonCommands(Action function)
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
         {
-            _function = function;
-            canExecute = true;
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
         #region ICommand Members
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
@@ -23,17 +23,12 @@ namespace WpfApp_Project_SyncFiles.Commands
 
         public bool CanExecute(object parameter)
         {
-            if (parameter is bool boolParameter)
-            {
-                canExecute = boolParameter;
-            }
-
-            return canExecute;
+            return _canExecute == null || _canExecute(parameter);
         }
 
         public void Execute(object parameter)
         {
-            _function.Invoke();
+            _execute(parameter);
         }
         #endregion
     }
