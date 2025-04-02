@@ -35,19 +35,19 @@
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="6">
-            External Drive 1
+            External Folder 1
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalDrive2}" Grid.Column="0" Grid.Row="7">
-            External Drive 2
+            External Folder 2
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalDrive3}" Grid.Column="0" Grid.Row="8">
-            External Drive 3
+            External Folder 3
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalDrive4}" Grid.Column="0" Grid.Row="9">
-            External Drive 4
+            External Folder 4
         </Button>
 
         <Button Grid.Column="1" Grid.Row="10">

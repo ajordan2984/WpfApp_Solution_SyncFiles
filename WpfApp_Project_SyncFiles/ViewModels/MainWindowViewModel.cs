@@ -16,20 +16,20 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel(Dispatcher dispatcher)
         {
-            UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
-            UpdateCommandBrowseExternalDrive1 = new RelayCommand(execute => Browse("ExternalDrive1Path"));
-            UpdateCommandBrowseExternalDrive2 = new RelayCommand(execute => Browse("ExternalDrive2Path"));
-            UpdateCommandBrowseExternalDrive3 = new RelayCommand(execute => Browse("ExternalDrive3Path"));
-            UpdateCommandBrowseExternalDrive4 = new RelayCommand(execute => Browse("ExternalDrive4Path"));
+            UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("0"));
+            UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("1"));
+            UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("2"));
+            UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("3"));
+            UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("4"));
             _dispatcher = dispatcher;
         }
 
         #region Private Members
         private static string _PcPath = null;
-        private static string _ExternalDrive1Path = null;
-        private static string _ExternalDrive2Path = null;
-        private static string _ExternalDrive3Path = null;
-        private static string _ExternalDrive4Path = null;
+        private static string _ExternalFolder1Path = null;
+        private static string _ExternalFolder2Path = null;
+        private static string _ExternalFolder3Path = null;
+        private static string _ExternalFolder4Path = null;
         private string _statusText = null;
         private readonly Dispatcher _dispatcher;
         private readonly ConcurrentQueue<string> _messageQueue = new();
@@ -59,52 +59,52 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(PcPath)));
             }
         }
-        public string ExternalDrive1Path
+        public string ExternalFolder1Path
         {
             get
             {
-                return _ExternalDrive1Path;
+                return _ExternalFolder1Path;
             }
             set
             {
-                _ExternalDrive1Path = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive1Path)));
+                _ExternalFolder1Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder1Path)));
             }
         }
-        public string ExternalDrive2Path
+        public string ExternalFolder2Path
         {
             get
             {
-                return _ExternalDrive2Path;
+                return _ExternalFolder2Path;
             }
             set
             {
-                _ExternalDrive2Path = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive2Path)));
+                _ExternalFolder2Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder2Path)));
             }
         }
-        public string ExternalDrive3Path
+        public string ExternalFolder3Path
         {
             get
             {
-                return _ExternalDrive3Path;
+                return _ExternalFolder3Path;
             }
             set
             {
-                _ExternalDrive3Path = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive3Path)));
+                _ExternalFolder3Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder3Path)));
             }
         }
-        public string ExternalDrive4Path
+        public string ExternalFolder4Path
         {
             get
             {
-                return _ExternalDrive4Path;
+                return _ExternalFolder4Path;
             }
             set
             {
-                _ExternalDrive4Path = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalDrive4Path)));
+                _ExternalFolder4Path = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder4Path)));
             }
         }
         #endregion
@@ -112,10 +112,10 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         #region Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
-        public RelayCommand UpdateCommandBrowseExternalDrive1 { get; set; }
-        public RelayCommand UpdateCommandBrowseExternalDrive2 { get; set; }
-        public RelayCommand UpdateCommandBrowseExternalDrive3 { get; set; }
-        public RelayCommand UpdateCommandBrowseExternalDrive4 { get; set; }
+        public RelayCommand UpdateCommandBrowseExternalFolder1 { get; set; }
+        public RelayCommand UpdateCommandBrowseExternalFolder2 { get; set; }
+        public RelayCommand UpdateCommandBrowseExternalFolder3 { get; set; }
+        public RelayCommand UpdateCommandBrowseExternalFolder4 { get; set; }
         #endregion
 
         #region Command Executions
@@ -132,20 +132,20 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                 switch (selectedTextBox)
                 {
-                    case "PcPath":
+                    case "0":
                         PcPath = path;
                         break;
-                    case "ExternalDrive1Path":
-                        ExternalDrive1Path = path;
+                    case "1":
+                        ExternalFolder1Path = path;
                         break;
-                    case "ExternalDrive2Path":
-                        ExternalDrive2Path = path;
+                    case "2":
+                        ExternalFolder2Path = path;
                         break;
-                    case "ExternalDrive3Path":
-                        ExternalDrive3Path = path;
+                    case "3":
+                        ExternalFolder3Path = path;
                         break;
-                    case "ExternalDrive4Path":
-                        ExternalDrive4Path = path;
+                    case "4":
+                        ExternalFolder4Path = path;
                         break;
                     default:
                         MessageBox.Show("An error occured in the Browse function.", "Alert");
@@ -167,7 +167,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     for (int j = 1; j <= 5; j++) // Each task updates 5 times
                     {
                         await Task.Delay(new Random().Next(100, 500)); // Simulate random work
-                        string message = $"Task {taskId} - Update {j}" + Environment.NewLine;
+                        string message = $"Task {taskId} - Update {j}";
 
                         _messageQueue.Enqueue(message); // Thread-safe queue
                         UpdateUI();
