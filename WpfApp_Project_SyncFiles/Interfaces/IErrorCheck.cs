@@ -6,6 +6,6 @@ namespace WpfApp_Project_SyncFiles.Interfaces
 {
     interface IErrorCheck
     {
-        HasErrorModel CheckPaths(string pcFolder, List<TextBoxModel> textBoxPaths);
+        HasErrorModel CheckPaths(string pcFolder, Dictionary<string, string> textBoxPaths);
     }
 }

@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Project_SyncFiles"
         mc:Ignorable="d"
-        Title="MainWindow" Height="735" Width="1000" ResizeMode="CanMinimize">
+        Title="MainWindow" Height="735" Width="1000" ResizeMode="CanMinimize" Background="MediumPurple">
     <Grid Height="700" VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*" />
             <ColumnDefinition Width="30*" />
             <ColumnDefinition Width="30*" />
             <ColumnDefinition Width="30*" />
@@ -34,32 +35,36 @@
             PC Folder
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive1}" Grid.Column="0" Grid.Row="6">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" Grid.Column="0" Grid.Row="6">
             External Folder 1
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive2}" Grid.Column="0" Grid.Row="7">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" Grid.Column="0" Grid.Row="7">
             External Folder 2
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive3}" Grid.Column="0" Grid.Row="8">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" Grid.Column="0" Grid.Row="8">
             External Folder 3
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalDrive4}" Grid.Column="0" Grid.Row="9">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" Grid.Column="0" Grid.Row="9">
             External Folder 4
         </Button>
 
-        <Button Grid.Column="1" Grid.Row="10">
+        <Button Command="{Binding UpdateCommandSyncFiles}" Grid.Column="1" Grid.Row="10">
             Sync Files
         </Button>
 
-        <Button Grid.Column="2" Grid.Row="10">
+        <Button Command="{Binding UpdateCommandClearLogUI}" Grid.Column="2" Grid.Row="10">
             Clear Log
         </Button>
 
+        <Button Grid.Column="3" Grid.Row="10">
+            Cancel Sync
+        </Button>
+
         <!--Textboxes-->
-        <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0"
+        <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
             <TextBox Text="Please select a folder from your PC that you would like synced across the external drives" 
                      HorizontalAlignment="Stretch" 
@@ -68,35 +73,35 @@
                      IsReadOnly="True"/>
         </Border>
 
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1"
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="1"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TextBox Text="{Binding Path=PcPath}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="6"
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="6"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="7"
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="7"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive2Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder2Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="8"
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="8"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive3Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder3Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
-        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9"
+        <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="9"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalDrive4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <!--TextBlock-->
         <Border Style="{StaticResource TextBlockStyle}" 
                 Grid.Column="0" 
-                Grid.ColumnSpan="4" 
+                Grid.ColumnSpan="5" 
                 Grid.Row="2"
                 Grid.RowSpan="4"
                 HorizontalAlignment="Stretch" 

@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using WpfApp_Project_SyncFiles.Commands;
+using WpfApp_Project_SyncFiles.Helpers;
+using WpfApp_Project_SyncFiles.Interfaces;
+using WpfApp_Project_SyncFiles.Models;
 using WpfApp_Project_SyncFiles.Views;
 
 namespace WpfApp_Project_SyncFiles.ViewModels
@@ -13,7 +18,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
     class MainWindowViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
-
+      
         public MainWindowViewModel(Dispatcher dispatcher)
         {
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("0"));
@@ -21,6 +26,9 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("2"));
             UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("3"));
             UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("4"));
+            UpdateCommandSyncFiles = new RelayCommand(execute => SyncFiles());
+            UpdateCommandClearLogUI = new RelayCommand(execute => ClearLogUI());
+
             _dispatcher = dispatcher;
         }
 
@@ -32,8 +40,11 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private static string _ExternalFolder4Path = null;
         private string _statusText = null;
         private readonly Dispatcher _dispatcher;
+        
         private readonly ConcurrentQueue<string> _messageQueue = new();
         private StringBuilder _textBuilder = new();
+        private Dictionary<string, string> _ExternalFoldersSelected = new();
+        private IErrorCheck _iec = new ErrorCheckHelper();
         #endregion
 
 
@@ -68,6 +79,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             set
             {
                 _ExternalFolder1Path = value;
+                AddSelectedExternalFolder("ExternalFolder1Path", value);
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder1Path)));
             }
         }
@@ -80,6 +92,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             set
             {
                 _ExternalFolder2Path = value;
+                AddSelectedExternalFolder("ExternalFolder2Path", value);
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder2Path)));
             }
         }
@@ -92,6 +105,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             set
             {
                 _ExternalFolder3Path = value;
+                AddSelectedExternalFolder("ExternalFolder3Path", value);
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder3Path)));
             }
         }
@@ -104,6 +118,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             set
             {
                 _ExternalFolder4Path = value;
+                AddSelectedExternalFolder("ExternalFolder4Path", value);
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder4Path)));
             }
         }
@@ -116,6 +131,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         public RelayCommand UpdateCommandBrowseExternalFolder2 { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder3 { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder4 { get; set; }
+        public RelayCommand UpdateCommandSyncFiles { get; set; }
+        public RelayCommand UpdateCommandClearLogUI { get; set; }
         #endregion
 
         #region Command Executions
@@ -153,7 +170,41 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 }
             }
         }
+
+        public void SyncFiles()
+        {
+            try
+            {
+                HasErrorModel hem = _iec.CheckPaths(PcPath, _ExternalFoldersSelected);
+
+                if (hem.HasError)
+                {
+                    MessageBox.Show(hem.ErrorMessage);
+                }
+                else
+                {
+                    MessageBox.Show("No Errors!");
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageQueue.Enqueue(ex.Message); // Thread-safe queue
+                UpdateUI();
+            }
+        }
+
+        private void ClearLogUI()
+        {
+            _dispatcher.Invoke(() =>
+            {
+                _textBuilder.Clear();
+                StatusText = _textBuilder.ToString();
+            });
+        }
         #endregion
+
+
+
 
         public async Task StartTasksAsync()
         {
@@ -188,6 +239,18 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     StatusText = _textBuilder.ToString();
                 }
             });
+        }
+
+        private void AddSelectedExternalFolder(string TextBoxName, string TextBoxPath)
+        {
+            if (_ExternalFoldersSelected.ContainsKey(TextBoxName))
+            {
+                _ExternalFoldersSelected[TextBoxName] = TextBoxPath.Trim();
+            }
+            else
+            {
+                _ExternalFoldersSelected.Add(TextBoxName, TextBoxPath.Trim());
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ namespace WpfApp_Project_SyncFiles
         public MainWindow()
         {
             InitializeComponent();
+            //DataContext = new MainWindowViewModel();
 
             _viewModel = new MainWindowViewModel(Dispatcher);
             DataContext = _viewModel;

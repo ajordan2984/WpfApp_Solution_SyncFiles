@@ -15,7 +15,6 @@
     <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
     <!-- Windows -->
     <Style TargetType="Window">
-        <Setter Property="Background" Value="LightGoldenrodYellow"/>
         <Setter Property="FontFamily" Value="Arial Rounded MT" />
         <Setter Property="FontWeight" Value="Thin" />
     </Style>
