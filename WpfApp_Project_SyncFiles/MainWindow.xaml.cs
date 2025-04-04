@@ -13,11 +13,9 @@ namespace WpfApp_Project_SyncFiles
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = new MainWindowViewModel();
 
             _viewModel = new MainWindowViewModel(Dispatcher);
             DataContext = _viewModel;
-            Loaded += async (s, e) => await _viewModel.StartTasksAsync();
         }
     }
 }

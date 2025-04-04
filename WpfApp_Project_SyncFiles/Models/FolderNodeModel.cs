@@ -148,9 +148,6 @@ namespace WpfApp_Project_SyncFiles.Models
         {
             try
             {
-                // Skips the exception of trying to get files out of a folder the user does not have access to
-                var badFolder = false;
-
                 #region Get Folders
                 try
                 {
@@ -162,8 +159,6 @@ namespace WpfApp_Project_SyncFiles.Models
                 }
                 catch (Exception)
                 {
-                    // Log exception
-                    badFolder = true;
                 }
                 #endregion
             }

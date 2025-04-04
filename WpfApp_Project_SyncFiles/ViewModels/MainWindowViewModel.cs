@@ -5,9 +5,10 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using WpfApp_Project_SyncFiles.Commands;
+using WpfApp_Project_SyncFiles.Controllers;
 using WpfApp_Project_SyncFiles.Helpers;
 using WpfApp_Project_SyncFiles.Interfaces;
 using WpfApp_Project_SyncFiles.Models;
@@ -17,8 +18,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
-      
         public MainWindowViewModel(Dispatcher dispatcher)
         {
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("0"));
@@ -26,36 +25,62 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("2"));
             UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("3"));
             UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("4"));
-            UpdateCommandSyncFiles = new RelayCommand(execute => SyncFiles());
+            UpdateCommandSyncFiles = new RelayCommand(async execute => await StartTasksAsync());
             UpdateCommandClearLogUI = new RelayCommand(execute => ClearLogUI());
-
+            TextColor = new SolidColorBrush(Colors.Black);
+            AreButtonsEnabled = true;
             _dispatcher = dispatcher;
         }
 
         #region Private Members
+        private bool _areButtonsEnabled;
+        private SolidColorBrush _textColor;
+        private string _statusText = null;
         private static string _PcPath = null;
         private static string _ExternalFolder1Path = null;
         private static string _ExternalFolder2Path = null;
         private static string _ExternalFolder3Path = null;
         private static string _ExternalFolder4Path = null;
-        private string _statusText = null;
         private readonly Dispatcher _dispatcher;
-        
-        private readonly ConcurrentQueue<string> _messageQueue = new();
+
         private StringBuilder _textBuilder = new();
         private Dictionary<string, string> _ExternalFoldersSelected = new();
         private IErrorCheck _iec = new ErrorCheckHelper();
         #endregion
 
 
-        #region Public Properties
+        #region XAML Bindings
+        public bool AreButtonsEnabled
+        {
+            get { return _areButtonsEnabled; }
+            set
+            {
+                if (_areButtonsEnabled != value)
+                {
+                    _areButtonsEnabled = value;
+                    OnPropertyChanged(nameof(AreButtonsEnabled));
+                }
+            }
+        }
+        public SolidColorBrush TextColor
+        {
+            get { return _textColor; }
+            set
+            {
+                if (_textColor != value)
+                {
+                    _textColor = value;
+                    OnPropertyChanged(nameof(TextColor));
+                }
+            }
+        }
         public string StatusText
         {
             get => _statusText;
             set
             {
                 _statusText = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(StatusText)));
+                OnPropertyChanged(nameof(StatusText));
             }
         }
         public string PcPath
@@ -67,7 +92,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             set
             {
                 _PcPath = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(PcPath)));
+                OnPropertyChanged(nameof(PcPath));
             }
         }
         public string ExternalFolder1Path
@@ -80,7 +105,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ExternalFolder1Path = value;
                 AddSelectedExternalFolder("ExternalFolder1Path", value);
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder1Path)));
+                OnPropertyChanged(nameof(ExternalFolder1Path));
             }
         }
         public string ExternalFolder2Path
@@ -93,7 +118,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ExternalFolder2Path = value;
                 AddSelectedExternalFolder("ExternalFolder2Path", value);
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder2Path)));
+                OnPropertyChanged(nameof(ExternalFolder2Path));
             }
         }
         public string ExternalFolder3Path
@@ -106,7 +131,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ExternalFolder3Path = value;
                 AddSelectedExternalFolder("ExternalFolder3Path", value);
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder3Path)));
+                OnPropertyChanged(nameof(ExternalFolder3Path));
             }
         }
         public string ExternalFolder4Path
@@ -119,13 +144,11 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ExternalFolder4Path = value;
                 AddSelectedExternalFolder("ExternalFolder4Path", value);
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ExternalFolder4Path)));
+                OnPropertyChanged(nameof(ExternalFolder4Path));
             }
         }
-        #endregion
 
-
-        #region Button Clicks
+        // Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder1 { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder2 { get; set; }
@@ -136,6 +159,13 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         #endregion
 
         #region Command Executions
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public void Browse(string selectedTextBox)
         {
             var childView = new FileDialogView();
@@ -171,28 +201,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
         }
 
-        public void SyncFiles()
-        {
-            try
-            {
-                HasErrorModel hem = _iec.CheckPaths(PcPath, _ExternalFoldersSelected);
-
-                if (hem.HasError)
-                {
-                    MessageBox.Show(hem.ErrorMessage);
-                }
-                else
-                {
-                    MessageBox.Show("No Errors!");
-                }
-            }
-            catch (Exception ex)
-            {
-                _messageQueue.Enqueue(ex.Message); // Thread-safe queue
-                UpdateUI();
-            }
-        }
-
         private void ClearLogUI()
         {
             _dispatcher.Invoke(() =>
@@ -201,44 +209,80 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 StatusText = _textBuilder.ToString();
             });
         }
-        #endregion
-
-
-
 
         public async Task StartTasksAsync()
         {
-            var tasks = new Task[100];
-
-            for (int i = 0; i < 100; i++)
+            try
             {
-                int taskId = i + 1;
-                tasks[i] = Task.Run(async () =>
+                HasErrorModel hem = _iec.CheckPaths(PcPath, _ExternalFoldersSelected);
+
+                if (hem.HasError)
                 {
-                    for (int j = 1; j <= 5; j++) // Each task updates 5 times
+                    UpdateTextBlockUI(hem.ErrorMessage);
+                }
+                else
+                {
+                    FlipButtonsUI(false);
+
+                    UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.");
+
+                    var gafafh = new GetAllFilesAndFoldersHelper(UpdateTextBlockUI);
+                    var pcFiles = gafafh.GetAllFiles(gafafh.GetAllDirectories(PcPath));
+                    var dictionary = new ConcurrentDictionary<string, FileInfoHolderModel>(pcFiles);
+                    var tasks = new List<Task>();
+
+                    foreach (var folderTextBoxKey in _ExternalFoldersSelected.Keys)
                     {
-                        await Task.Delay(new Random().Next(100, 500)); // Simulate random work
-                        string message = $"Task {taskId} - Update {j}";
+                        string externalFolder = _ExternalFoldersSelected[folderTextBoxKey];
+                        string pcFolderFromTextBox = PcPath;
 
-                        _messageQueue.Enqueue(message); // Thread-safe queue
-                        UpdateUI();
+                        tasks.Add(
+                          Task.Run(() =>
+                          {
+                              var _main = new SyncFilesFromPcToExternalDriveController(UpdateTextBlockUI);
+                              _main.SetAllSortedFilesFromPcPath(dictionary);
+                              _main.SetPaths(pcFolderFromTextBox, externalFolder);
+                              _main.SyncFiles();
+                          }));
                     }
-                });
+
+                    await Task.WhenAll(tasks);
+                    FlipButtonsUI(true);
+                }
             }
-
-            await Task.WhenAll(tasks);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
+        #endregion
 
-        private void UpdateUI()
+        public void FlipButtonsUI(bool isEnabled)
         {
             _dispatcher.Invoke(() =>
             {
-                if (_messageQueue.TryDequeue(out string newMessage))
-                {
-                    _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine + Environment.NewLine); // Append the text
-                    StatusText = _textBuilder.ToString();
-                }
+                AreButtonsEnabled = isEnabled;
             });
+        }
+
+        public void ChangeTextColor()
+        {
+            TextColor = TextColor == System.Windows.Media.Brushes.Red ? System.Windows.Media.Brushes.Blue : System.Windows.Media.Brushes.Red;
+        }
+
+        private void UpdateTextBlockUI(string newMessage)
+        {
+            try
+            {
+                _dispatcher.BeginInvoke(new Action(() => {
+                    _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine + Environment.NewLine);
+                    StatusText = _textBuilder.ToString();
+                }));
+            }
+            catch (Exception ex)
+            {
+                UpdateTextBlockUI(ex.Message);
+            }
         }
 
         private void AddSelectedExternalFolder(string TextBoxName, string TextBoxPath)

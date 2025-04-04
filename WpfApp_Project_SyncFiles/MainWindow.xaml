@@ -31,31 +31,31 @@
         </Grid.RowDefinitions>
 
         <!--Buttons-->
-        <Button Command="{Binding UpdateCommandBrowsePcPath}" Grid.Column="0" Grid.Row="1">
+        <Button Command="{Binding UpdateCommandBrowsePcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="1">
             PC Folder
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" Grid.Column="0" Grid.Row="6">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="6">
             External Folder 1
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" Grid.Column="0" Grid.Row="7">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="7">
             External Folder 2
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" Grid.Column="0" Grid.Row="8">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="8">
             External Folder 3
         </Button>
 
-        <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" Grid.Column="0" Grid.Row="9">
+        <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="9">
             External Folder 4
         </Button>
 
-        <Button Command="{Binding UpdateCommandSyncFiles}" Grid.Column="1" Grid.Row="10">
+        <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="10">
             Sync Files
         </Button>
 
-        <Button Command="{Binding UpdateCommandClearLogUI}" Grid.Column="2" Grid.Row="10">
+        <Button Command="{Binding UpdateCommandClearLogUI}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="2" Grid.Row="10">
             Clear Log
         </Button>
 
@@ -107,7 +107,7 @@
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <TextBlock Text="{Binding StatusText}" Foreground="{Binding TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </ScrollViewer>
         </Border>
 
