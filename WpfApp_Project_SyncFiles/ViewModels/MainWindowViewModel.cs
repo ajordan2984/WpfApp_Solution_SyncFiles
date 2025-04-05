@@ -287,13 +287,23 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         private void AddSelectedExternalFolder(string TextBoxName, string TextBoxPath)
         {
-            if (_ExternalFoldersSelected.ContainsKey(TextBoxName))
+            if (string.IsNullOrEmpty(TextBoxPath))
             {
-                _ExternalFoldersSelected[TextBoxName] = TextBoxPath.Trim();
+                if (_ExternalFoldersSelected.ContainsKey(TextBoxName))
+                {
+                    _ExternalFoldersSelected.Remove(TextBoxName);
+                }
             }
             else
             {
-                _ExternalFoldersSelected.Add(TextBoxName, TextBoxPath.Trim());
+                if (_ExternalFoldersSelected.ContainsKey(TextBoxName))
+                {
+                    _ExternalFoldersSelected[TextBoxName] = TextBoxPath.Trim();
+                }
+                else
+                {
+                    _ExternalFoldersSelected.Add(TextBoxName, TextBoxPath.Trim());
+                }
             }
         }
     }
