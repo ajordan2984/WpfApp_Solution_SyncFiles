@@ -134,7 +134,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                List<string> allDirectories = new List<string>(Directory.GetDirectories(directory));
+                List<string> allDirectories = new(Directory.GetDirectories(directory));
 
                 if (allDirectories.Count > 0)
                 {
@@ -162,15 +162,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                using (StreamWriter writetext = new StreamWriter(pathToChangesFile))
+                using StreamWriter writetext = new StreamWriter(pathToChangesFile);
+                foreach (var file in allSortedFilesFromFromExternalDrive)
                 {
-                    foreach (var file in allSortedFilesFromFromExternalDrive)
-                    {
-                        writetext.WriteLine(file.Key);
-                        writetext.WriteLine(file.Value.Modified);
-                    }
-                    writetext.Close();
+                    writetext.WriteLine(file.Key);
+                    writetext.WriteLine(file.Value.Modified);
                 }
+                writetext.Close();
             }
             catch (Exception ex)
             {

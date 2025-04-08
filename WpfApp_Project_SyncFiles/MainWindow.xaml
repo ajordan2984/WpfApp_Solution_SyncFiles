@@ -75,27 +75,27 @@
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="1"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=PcPath}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=PcPath}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="6"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalFolder1Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder1Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="7"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalFolder2Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder2Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="8"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalFolder3Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder3Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="9"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox Text="{Binding Path=ExternalFolder4Path}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBox Text="{Binding Path=ExternalFolder4Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Border>
 
         <!--TextBlock-->

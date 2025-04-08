@@ -44,7 +44,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
         {
             GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI);
 
-            _updateTextBlockUI($@"Checking for the file: {_pathToFilesOnExternal}\Changes.txt");
+            _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"");
             _allSortedFilesFromFromExternalDrive = gafh.CheckForChanges($@"{_pathToFilesOnExternal}\Changes.txt");
 
             if (_allSortedFilesFromFromExternalDrive.Count == 0)
@@ -52,30 +52,30 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal));
             }
 
-            _updateTextBlockUI($@"Copying files from: {_pathToFilesOnPc} to {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"");
             _hf.CopyFilesFromOneDriveToAnotherDrive(
                 _allSortedFilesFromPcPath,
                 _allSortedFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
                 _shortPathToFilesOnExternal
                 );
-            _updateTextBlockUI($@"Done copying files from: {_pathToFilesOnPc} to {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Done copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"");
 
-            _updateTextBlockUI($@"Quarantining files on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Quarantining any files on: \"{_pathToFilesOnExternal}\"");
             _hf.QuarantineFiles(
             _allSortedFilesFromPcPath,
             _allSortedFilesFromFromExternalDrive,
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
-            _updateTextBlockUI($@"Done quarantining files on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Done quarantining files on: \"{_pathToFilesOnExternal}\"");
 
-            _updateTextBlockUI($@"Removing any empty folders on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"");
             _hf.RecursiveRemoveDirectories(_pathToFilesOnExternal);
-            _updateTextBlockUI($@"Done removing any empty folders on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"");
 
-            _updateTextBlockUI($"Writing \"Changes.txt\" on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
             _hf.UpdateChangesFile($@"{_pathToFilesOnExternal}\Changes.txt", _allSortedFilesFromFromExternalDrive);
-            _updateTextBlockUI($"Done writing \"Changes.txt\" on: {_pathToFilesOnExternal}");
+            _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
         }
     }
 }

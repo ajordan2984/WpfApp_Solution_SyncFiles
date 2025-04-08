@@ -26,6 +26,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 if (File.Exists(pathToChangesFile))
                 {
+                    _updateTextBlockUI($"File \"{pathToChangesFile}\" found. Reading the file contents.");
+
                     string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
 
@@ -36,11 +38,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         sortedFiles.Add(lines[i].Replace(oldPathRoot, newPathRoot), fih);
                     }
 
-                    _updateTextBlockUI($@"File found. Done getting all files from: {pathToChangesFile}");
+                    _updateTextBlockUI($"Completed reading the file contents from: \"{ pathToChangesFile}\"");
                 }
                 else
                 {
-                    _updateTextBlockUI($"Cannot find: {pathToChangesFile} | Moving to collect directories and files.");
+                    _updateTextBlockUI($"Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.");
                 }
             }
             catch (Exception ex)
@@ -81,7 +83,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 _updateTextBlockUI(ex.Message);
             }
 
-            _updateTextBlockUI($@"Done getting all folders from: {_startingDirectory}");
+            _updateTextBlockUI($@"Completed getting all folders from: {_startingDirectory}.");
             return allDirectories;
         }
 
@@ -107,7 +109,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 }
             }
 
-            _updateTextBlockUI($@"Done getting all files from: {_startingDirectory}");
+            _updateTextBlockUI($@"Completed getting all files from: {_startingDirectory}.");
             return allSortedFiles;
         }
 

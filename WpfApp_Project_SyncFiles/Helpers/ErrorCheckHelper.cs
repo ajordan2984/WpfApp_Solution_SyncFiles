@@ -30,12 +30,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
             
             foreach (string textBoxName in textBoxes.Keys)
             {
-                if (textBoxes[textBoxName] == pcFolderPath)
+                string externalFolderPath = textBoxes[textBoxName];
+
+                if (externalFolderPath == pcFolderPath)
                 {
                     return new HasErrorModel(true, "Error: The PC folder and External folder cannot be the same. Please Try again.");
                 }
-
-                string externalFolderPath = textBoxes[textBoxName];
 
                 if (!Directory.Exists(externalFolderPath))
                 {
@@ -47,7 +47,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 if (shortPcFolderPath != shortExternalFolderPath)
                 {
-                    return new HasErrorModel(true, $"Error: Sorry the end of your PC folder: \"{shortPcFolderPath}\" does not match the end of the folder \"{shortExternalFolderPath}\" on your external drive. Please try again.");
+                    return new HasErrorModel(true, $"Error: Sorry the end of your PC folder: \"{pcFolderPath}\" does not match the end of the folder \"{externalFolderPath}\" on your external drive. Please try again.");
                 }
             }
             
