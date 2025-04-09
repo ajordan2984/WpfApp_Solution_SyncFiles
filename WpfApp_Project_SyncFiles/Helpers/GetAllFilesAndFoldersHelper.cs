@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WpfApp_Project_SyncFiles.Models;
 
@@ -53,7 +54,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return sortedFiles;
         }
 
-        public List<string> GetAllDirectories(string startingDirectory)
+        public List<string> GetAllDirectories(string startingDirectory, CancellationToken token)
         {
             _startingDirectory = startingDirectory;
 
@@ -70,6 +71,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 {
                     try
                     {
+                        // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                        if (token.IsCancellationRequested)
+                        {
+                            _updateTextBlockUI($@"Cancelling getting all folders from: {_startingDirectory}.");
+                            return new List<string>();
+                        }
+
                         allDirectories.AddRange(Directory.GetDirectories(allDirectories[i]));
                     }
                     catch (Exception ex)
@@ -87,18 +95,25 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return allDirectories;
         }
 
-        public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)
+        public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories, CancellationToken token)
         {
             _updateTextBlockUI($@"Getting all files from: {_startingDirectory}");
 
-            SortedDictionary<string, FileInfoHolderModel> allSortedFiles = new SortedDictionary<string, FileInfoHolderModel>();
-            ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new ConcurrentBag<FileInfoHolderModel>();
+            SortedDictionary<string, FileInfoHolderModel> allSortedFiles = new();
+            ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new();
 
-            ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+            // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+            if (token.IsCancellationRequested)
+            {
+                _updateTextBlockUI($@"Cancelling getting all files.");
+                return new SortedDictionary<string, FileInfoHolderModel>();
+            }
+
+            ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
             _ = Parallel.ForEach(allDirectories, options, directory =>
               {
-                  ConcurrentGetFiles(directory, bagOfAllFiles);
+                  ConcurrentGetFiles(directory, bagOfAllFiles, token);
               });
 
             foreach (var fih in bagOfAllFiles)
@@ -113,12 +128,17 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return allSortedFiles;
         }
 
-        private void ConcurrentGetFiles(string directory, ConcurrentBag<FileInfoHolderModel> bagOfAllFiles)
+        private void ConcurrentGetFiles(string directory, ConcurrentBag<FileInfoHolderModel> bagOfAllFiles, CancellationToken token)
         {
             List<string> files = new();
 
             try
             {
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 files.AddRange(Directory.GetFiles(directory, "*"));
 
                 foreach (string file in files)

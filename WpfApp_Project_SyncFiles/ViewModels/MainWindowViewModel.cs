@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -33,6 +34,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private TrackTextBoxUpdatesHelper _ttbuh;
         private StringBuilder _textBuilder;
         private IErrorCheck _iec;
+        CancellationTokenSource _cts;
         #endregion
 
         public MainWindowViewModel(Dispatcher dispatcher)
@@ -52,6 +54,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _ttbuh = new();
             _textBuilder = new();
             _iec = new ErrorCheckHelper();
+            _cts = new CancellationTokenSource();
         }
 
         #region XAML Bindings
@@ -230,7 +233,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.");
 
                     GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI);
-                    SortedDictionary<string, FileInfoHolderModel> pcFiles = gafafh.GetAllFiles(gafafh.GetAllDirectories(PcPath));
+                    SortedDictionary<string, FileInfoHolderModel> pcFiles = gafafh.GetAllFiles(gafafh.GetAllDirectories(PcPath, _cts.Token), _cts.Token);
                     ConcurrentDictionary<string, FileInfoHolderModel> dictionary = new(pcFiles);
                     List<Task> tasks = new();
 
@@ -242,16 +245,23 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                         tasks.Add(
                           Task.Run(() =>
                           {
-                              SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI);
+                              SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
                               _main.SetAllSortedFilesFromPcPath(dictionary);
                               _main.SetPaths(pcFolderFromTextBox, externalFolder);
-                              _main.SyncFiles();
-                              UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".");
+                              bool completed = _main.SyncFiles();
+
+                              if (completed)
+                              { 
+                                  UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".");
+                              }
+                              else
+                              {
+                                  UpdateTextBlockUI($"Canceled syncing your files to \"{externalFolder}\".");
+                              }
                           }));
                     }
 
                     await Task.WhenAll(tasks);
-                    UpdateTextBlockUI($"Completed syncing all your files to the external folders selected.");
 
                     FlipTextBoxesUI(true);
                     FlipButtonsUI(true);

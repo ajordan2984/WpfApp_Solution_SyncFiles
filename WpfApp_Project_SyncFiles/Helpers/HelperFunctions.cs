@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using WpfApp_Project_SyncFiles.Models;
 
@@ -11,10 +12,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
     public class HelperFunctions
     {
         private Action<string> _updateTextBlockUI;
+        CancellationToken _ct;
 
-        public HelperFunctions(Action<string> updateTextBlockUI)
+        public HelperFunctions(Action<string> updateTextBlockUI, CancellationToken ct)
         { 
             _updateTextBlockUI = updateTextBlockUI;
+            _ct = ct;
         }
 
         public string ShortenedPath(string path)
@@ -50,10 +53,17 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                List<Tuple<string, string>> filesToCopy = new List<Tuple<string, string>>();
+                List<Tuple<string, string>> filesToCopy = new();
 
                 foreach (string file in filesFromPcPath.Keys)
                 {
+                    // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                    if (_ct.IsCancellationRequested)
+                    {
+                        _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".");
+                        return;
+                    }
+
                     string destinationPathForFile = file.Replace(_shortPathToFilesOnPc, _shortPathToFilesOnExternal);
 
                     if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
@@ -76,6 +86,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 Parallel.ForEach(filesToCopy, options, ftc =>
                 {
+                    // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                    if (_ct.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     Directory.CreateDirectory(Path.GetDirectoryName(ftc.Item2));
 
                     try
@@ -103,10 +119,16 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                List<string> keysToRemove = new List<string>();
+                List<string> keysToRemove = new();
 
                 foreach (string fileFromExternalDrive in filesFromExternalDrive.Keys)
                 {
+                    // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                    if (_ct.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     string filePathOnPc = fileFromExternalDrive.Replace(_shortPathToFilesOnExternal, _shortPathToFilesOnPc);
 
                     if (!filesFromPcPath.ContainsKey(filePathOnPc))
@@ -134,6 +156,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
+                // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                if (_ct.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 List<string> allDirectories = new(Directory.GetDirectories(directory));
 
                 if (allDirectories.Count > 0)
@@ -162,7 +190,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                using StreamWriter writetext = new StreamWriter(pathToChangesFile);
+                // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                if (_ct.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                using StreamWriter writetext = new(pathToChangesFile);
                 foreach (var file in allSortedFilesFromFromExternalDrive)
                 {
                     writetext.WriteLine(file.Key);
