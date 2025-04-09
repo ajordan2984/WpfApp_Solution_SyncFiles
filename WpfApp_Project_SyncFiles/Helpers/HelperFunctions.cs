@@ -82,7 +82,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     }
                 }
 
-                ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
                 Parallel.ForEach(filesToCopy, options, ftc =>
                 {
@@ -190,12 +190,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                // CANCEL SYNCING FILES TO EXTERNAL FOLDER
-                if (_ct.IsCancellationRequested)
-                {
-                    return;
-                }
-
                 using StreamWriter writetext = new(pathToChangesFile);
                 foreach (var file in allSortedFilesFromFromExternalDrive)
                 {
@@ -203,6 +197,21 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     writetext.WriteLine(file.Value.Modified);
                 }
                 writetext.Close();
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message);
+            }
+        }
+
+        public void RemoveUpdateChangesFile(string pathToChangesFile)
+        {
+            try
+            {
+                if (File.Exists(pathToChangesFile))
+                {
+                    File.Delete(pathToChangesFile);
+                }
             }
             catch (Exception ex)
             {

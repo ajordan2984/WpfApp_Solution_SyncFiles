@@ -10,6 +10,7 @@
     <BitmapImage x:Key="MainWindowIcon" UriSource="pack://application:,,,/Images/MainWindowIcon.png" />
     <BitmapImage x:Key="PeopleDataGridIcon" UriSource="pack://application:,,,/Images/PeopleDataGridIcon.png" />
     <BitmapImage x:Key="PictureMessageBoxIcon" UriSource="pack://application:,,,/Images/PictureMessageBoxIcon.png" />
+    <BitmapImage x:Key="SinkIcon" UriSource="pack://application:,,,/Images/SinkIcon.png" />
 
     <!--Converters-->
     <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>

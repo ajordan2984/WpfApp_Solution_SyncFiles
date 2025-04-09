@@ -12,11 +12,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
     public class GetAllFilesAndFoldersHelper
     {
         private Action<string> _updateTextBlockUI;
+        private CancellationToken _ct;
         private string _startingDirectory;
 
-        public GetAllFilesAndFoldersHelper(Action<string> updateTextBlockUI)
+        public GetAllFilesAndFoldersHelper(Action<string> updateTextBlockUI, CancellationToken token)
         {
             _updateTextBlockUI = updateTextBlockUI;
+            _ct = token;
         }
 
         public SortedDictionary<string, FileInfoHolderModel> CheckForChanges(string pathToChangesFile)
@@ -54,7 +56,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return sortedFiles;
         }
 
-        public List<string> GetAllDirectories(string startingDirectory, CancellationToken token)
+        public List<string> GetAllDirectories(string startingDirectory)
         {
             _startingDirectory = startingDirectory;
 
@@ -72,7 +74,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     try
                     {
                         // CANCEL SYNCING FILES TO EXTERNAL FOLDER
-                        if (token.IsCancellationRequested)
+                        if (_ct.IsCancellationRequested)
                         {
                             _updateTextBlockUI($@"Cancelling getting all folders from: {_startingDirectory}.");
                             return new List<string>();
@@ -95,7 +97,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return allDirectories;
         }
 
-        public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories, CancellationToken token)
+        public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)
         {
             _updateTextBlockUI($@"Getting all files from: {_startingDirectory}");
 
@@ -103,7 +105,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new();
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
-            if (token.IsCancellationRequested)
+            if (_ct.IsCancellationRequested)
             {
                 _updateTextBlockUI($@"Cancelling getting all files.");
                 return new SortedDictionary<string, FileInfoHolderModel>();
@@ -113,7 +115,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             _ = Parallel.ForEach(allDirectories, options, directory =>
               {
-                  ConcurrentGetFiles(directory, bagOfAllFiles, token);
+                  ConcurrentGetFiles(directory, bagOfAllFiles);
               });
 
             foreach (var fih in bagOfAllFiles)
@@ -128,13 +130,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return allSortedFiles;
         }
 
-        private void ConcurrentGetFiles(string directory, ConcurrentBag<FileInfoHolderModel> bagOfAllFiles, CancellationToken token)
+        private void ConcurrentGetFiles(string directory, ConcurrentBag<FileInfoHolderModel> bagOfAllFiles)
         {
             List<string> files = new();
 
             try
             {
-                if (token.IsCancellationRequested)
+                // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                if (_ct.IsCancellationRequested)
                 {
                     return;
                 }

@@ -46,7 +46,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
         public bool SyncFiles()
         {
-            GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI);
+            GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI, _ct);
 
             _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"");
             _allSortedFilesFromFromExternalDrive = gafh.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
@@ -60,7 +60,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
             if (_allSortedFilesFromFromExternalDrive.Count == 0)
             {
-                _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ct), _ct);
+                _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal));
             }
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
@@ -112,10 +112,22 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
 
             _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
-            _hf.UpdateChangesFile($@"{_pathToFilesOnExternal}\Changes.txt", _allSortedFilesFromFromExternalDrive);
+            _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allSortedFilesFromFromExternalDrive);
             _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
 
             return true;
+        }
+
+        public void RemoveUpdateChangesFile()
+        {
+            try
+            {
+                _hf.RemoveUpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt");
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message);
+            }
         }
     }
 }

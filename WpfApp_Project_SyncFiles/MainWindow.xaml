@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Project_SyncFiles"
         mc:Ignorable="d"
-        Title="MainWindow" Height="735" Width="1000" ResizeMode="CanMinimize" Background="MediumPurple">
+        Title="MainWindow" Height="735" Width="1000" Icon="{DynamicResource SinkIcon}" ResizeMode="CanMinimize" Background="MediumPurple">
     <Grid Height="700" VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
@@ -59,14 +59,14 @@
             Clear Log
         </Button>
 
-        <Button Grid.Column="3" Grid.Row="10">
+        <Button Command="{Binding UpdateCommandCancelSync}" Grid.Column="3" Grid.Row="10">
             Cancel Sync
         </Button>
 
         <!--Textboxes-->
         <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-            <TextBox Text="Please select a folder from your PC that you would like synced across the external drives" 
+            <TextBox Text="Please select a folder from your PC that you would like synced across the external folders" 
                      HorizontalAlignment="Stretch" 
                      VerticalAlignment="Stretch" 
                      TextAlignment="Center"

@@ -15,6 +15,7 @@
     <None Remove="Images\MainWindowIcon.png" />
     <None Remove="Images\PeopleDataGridIcon.png" />
     <None Remove="Images\PictureMessageBoxIcon.png" />
+    <None Remove="Images\SinkIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +38,7 @@
     <Resource Include="Images\MainWindowIcon.png" />
     <Resource Include="Images\PeopleDataGridIcon.png" />
     <Resource Include="Images\PictureMessageBoxIcon.png" />
+    <Resource Include="Images\SinkIcon.png" />
   </ItemGroup>
 
 </Project>

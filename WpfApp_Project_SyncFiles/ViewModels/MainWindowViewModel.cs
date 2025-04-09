@@ -49,12 +49,13 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("4"));
             UpdateCommandSyncFiles = new RelayCommand(async execute => await StartTasksAsync());
             UpdateCommandClearLogUI = new RelayCommand(execute => ClearLogUI());
-            
+            UpdateCommandCancelSync = new RelayCommand(execute => CancelSync());
+
             _dispatcher = dispatcher;
             _ttbuh = new();
             _textBuilder = new();
             _iec = new ErrorCheckHelper();
-            _cts = new CancellationTokenSource();
+            _cts = null;
         }
 
         #region XAML Bindings
@@ -161,6 +162,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         public RelayCommand UpdateCommandBrowseExternalFolder4 { get; set; }
         public RelayCommand UpdateCommandSyncFiles { get; set; }
         public RelayCommand UpdateCommandClearLogUI { get; set; }
+        public RelayCommand UpdateCommandCancelSync { get; set; }
         #endregion
 
         #region Command Executions
@@ -206,15 +208,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
         }
 
-        private void ClearLogUI()
-        {
-            _dispatcher.Invoke(() =>
-            {
-                _textBuilder.Clear();
-                StatusText = _textBuilder.ToString();
-            });
-        }
-
         public async Task StartTasksAsync()
         {
             try
@@ -227,14 +220,17 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 }
                 else
                 {
+                    _cts = new CancellationTokenSource();
                     FlipTextBoxesUI(false);
                     FlipButtonsUI(false);
 
                     UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.");
 
-                    GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI);
-                    SortedDictionary<string, FileInfoHolderModel> pcFiles = gafafh.GetAllFiles(gafafh.GetAllDirectories(PcPath, _cts.Token), _cts.Token);
-                    ConcurrentDictionary<string, FileInfoHolderModel> dictionary = new(pcFiles);
+                    GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI, _cts.Token);
+
+                    List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath);
+                    SortedDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
+                    ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                     List<Task> tasks = new();
 
                     foreach (string folderTextBoxKey in _ttbuh.ExternalFoldersSelected.Keys)
@@ -246,17 +242,18 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                           Task.Run(() =>
                           {
                               SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
-                              _main.SetAllSortedFilesFromPcPath(dictionary);
+                              _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                               _main.SetPaths(pcFolderFromTextBox, externalFolder);
                               bool completed = _main.SyncFiles();
 
                               if (completed)
-                              { 
+                              {
                                   UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".");
                               }
                               else
                               {
-                                  UpdateTextBlockUI($"Canceled syncing your files to \"{externalFolder}\".");
+                                  UpdateTextBlockUI($"Syncing your files to \"{externalFolder}\" was Canceled by the user.");
+                                  _main.RemoveUpdateChangesFile();
                               }
                           }));
                     }
@@ -272,6 +269,35 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 _ = MessageBox.Show(ex.Message);
             }
         }
+
+        private void ClearLogUI()
+        {
+            _dispatcher.Invoke(() =>
+            {
+                _textBuilder.Clear();
+                StatusText = _textBuilder.ToString();
+            });
+        }
+
+        private void CancelSync()
+        {
+            try
+            {
+                if (_cts == null)
+                {
+                    return;
+                }
+
+                if (_cts != null)
+                {
+                    _cts.Cancel();
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateTextBlockUI(ex.Message);
+            }
+        }
         #endregion
 
         public void FlipTextBoxesUI(bool isEnabled)
@@ -281,7 +307,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 AreTextBoxesEnabled = isEnabled;
             });
         }
-        
+
         public void FlipButtonsUI(bool isEnabled)
         {
             _dispatcher.BeginInvoke(() =>
@@ -290,16 +316,12 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             });
         }
 
-        public void ChangeTextColor()
-        {
-            TextColor = TextColor == System.Windows.Media.Brushes.Red ? System.Windows.Media.Brushes.Blue : System.Windows.Media.Brushes.Red;
-        }
-
         private void UpdateTextBlockUI(string newMessage)
         {
             try
             {
-                _dispatcher.BeginInvoke(new Action(() => {
+                _dispatcher.BeginInvoke(new Action(() =>
+                {
                     _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine);
                     StatusText = _textBuilder.ToString();
                 }));
