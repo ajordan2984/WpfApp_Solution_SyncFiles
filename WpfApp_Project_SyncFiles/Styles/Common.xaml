@@ -29,12 +29,6 @@
         </TextBlock>
     </DataTemplate>
 
-    <!--TextBlock Menu Item-->
-    <!--<Style TargetType="TextBlock" x:Key="TextBlockMenuItemStyle">
-        <Setter Property="FontSize" Value="10"/>
-        <Setter Property="Background" Value="LightGreen"/>
-    </Style>-->
-
     <!--TextBox-->
     <Style TargetType="TextBox">
         <Setter Property="FontSize" Value="20"/>

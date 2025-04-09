@@ -302,29 +302,29 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public void FlipTextBoxesUI(bool isEnabled)
         {
-            _dispatcher.BeginInvoke(() =>
-            {
-                AreTextBoxesEnabled = isEnabled;
-            });
+            _ = _dispatcher.BeginInvoke(() =>
+              {
+                  AreTextBoxesEnabled = isEnabled;
+              });
         }
 
         public void FlipButtonsUI(bool isEnabled)
         {
-            _dispatcher.BeginInvoke(() =>
-            {
-                AreButtonsEnabled = isEnabled;
-            });
+            _ = _dispatcher.BeginInvoke(() =>
+              {
+                  AreButtonsEnabled = isEnabled;
+              });
         }
 
         private void UpdateTextBlockUI(string newMessage)
         {
             try
             {
-                _dispatcher.BeginInvoke(new Action(() =>
-                {
-                    _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine);
-                    StatusText = _textBuilder.ToString();
-                }));
+                _ = _dispatcher.BeginInvoke(new Action(() =>
+                  {
+                      _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine);
+                      StatusText = _textBuilder.ToString();
+                  }));
             }
             catch (Exception ex)
             {

@@ -7,14 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\ColorDataGridIcon.png" />
     <None Remove="Images\FileDialogIcon.png" />
     <None Remove="Images\FolderClosed.png" />
     <None Remove="Images\FolderOpen.png" />
     <None Remove="Images\LoadingDialogIcon.png" />
-    <None Remove="Images\MainWindowIcon.png" />
-    <None Remove="Images\PeopleDataGridIcon.png" />
-    <None Remove="Images\PictureMessageBoxIcon.png" />
     <None Remove="Images\SinkIcon.png" />
   </ItemGroup>
 
@@ -30,14 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\ColorDataGridIcon.png" />
     <Resource Include="Images\FileDialogIcon.png" />
     <Resource Include="Images\FolderClosed.png" />
     <Resource Include="Images\FolderOpen.png" />
     <Resource Include="Images\LoadingDialogIcon.png" />
-    <Resource Include="Images\MainWindowIcon.png" />
-    <Resource Include="Images\PeopleDataGridIcon.png" />
-    <Resource Include="Images\PictureMessageBoxIcon.png" />
     <Resource Include="Images\SinkIcon.png" />
   </ItemGroup>
 
