@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WpfApp_Project_SyncFiles.Commands;
@@ -22,8 +24,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         #region Private Members
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
-        private SolidColorBrush _textColor;
-        private string _statusText;
         private static string _PcPath;
         private static string _ExternalFolder1Path;
         private static string _ExternalFolder2Path;
@@ -32,16 +32,15 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         private readonly Dispatcher _dispatcher;
         private TrackTextBoxUpdatesHelper _ttbuh;
-        private StringBuilder _textBuilder;
         private IErrorCheck _iec;
         CancellationTokenSource _cts;
         #endregion
 
         public MainWindowViewModel(Dispatcher dispatcher)
         {
+            Inlines = new ObservableCollection<Inline>();
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
-            _textColor = new SolidColorBrush(Colors.Black);
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("0"));
             UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("1"));
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("2"));
@@ -53,12 +52,12 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
             _dispatcher = dispatcher;
             _ttbuh = new();
-            _textBuilder = new();
             _iec = new ErrorCheckHelper();
             _cts = null;
         }
 
         #region XAML Bindings
+        public ObservableCollection<Inline> Inlines { get; }
         public bool AreTextBoxesEnabled
         {
             get => _areTextBoxesEnabled;
@@ -81,27 +80,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     _areButtonsEnabled = value;
                     OnPropertyChanged(nameof(AreButtonsEnabled));
                 }
-            }
-        }
-        public SolidColorBrush TextColor
-        {
-            get { return _textColor; }
-            set
-            {
-                if (_textColor != value)
-                {
-                    _textColor = value;
-                    OnPropertyChanged(nameof(TextColor));
-                }
-            }
-        }
-        public string StatusText
-        {
-            get => _statusText;
-            set
-            {
-                _statusText = value;
-                OnPropertyChanged(nameof(StatusText));
             }
         }
         public string PcPath
@@ -216,7 +194,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                 if (hem.HasError)
                 {
-                    UpdateTextBlockUI(hem.ErrorMessage);
+                    UpdateTextBlockUI(hem.ErrorMessage, Brushes.Red);
                 }
                 else
                 {
@@ -224,7 +202,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     FlipTextBoxesUI(false);
                     FlipButtonsUI(false);
 
-                    UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.");
+                    UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.", Brushes.Black);
 
                     GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI, _cts.Token);
 
@@ -248,11 +226,11 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                               if (completed)
                               {
-                                  UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".");
+                                  UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".", Brushes.Black);
                               }
                               else
                               {
-                                  UpdateTextBlockUI($"Syncing your files to \"{externalFolder}\" was Canceled by the user.");
+                                  UpdateTextBlockUI($"Syncing your files to \"{externalFolder}\" was Canceled by the user.", Brushes.Red);
                                   _main.RemoveUpdateChangesFile();
                               }
                           }));
@@ -274,8 +252,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         {
             _dispatcher.Invoke(() =>
             {
-                _textBuilder.Clear();
-                StatusText = _textBuilder.ToString();
+                Inlines.Clear();
             });
         }
 
@@ -295,7 +272,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
             catch (Exception ex)
             {
-                UpdateTextBlockUI(ex.Message);
+                UpdateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
         #endregion
@@ -316,19 +293,20 @@ namespace WpfApp_Project_SyncFiles.ViewModels
               });
         }
 
-        private void UpdateTextBlockUI(string newMessage)
+        private void UpdateTextBlockUI(string newMessage, SolidColorBrush textColor)
         {
             try
             {
                 _ = _dispatcher.BeginInvoke(new Action(() =>
                   {
-                      _textBuilder.AppendLine(DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine);
-                      StatusText = _textBuilder.ToString();
+                      string text = DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine;
+                      Run run = new(text) { Foreground = textColor };
+                      Inlines.Add(run);
                   }));
             }
             catch (Exception ex)
             {
-                UpdateTextBlockUI(ex.Message);
+                UpdateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
     }

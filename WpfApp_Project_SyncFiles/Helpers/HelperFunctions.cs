@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Models;
 
 namespace WpfApp_Project_SyncFiles.Helpers
 {
     public class HelperFunctions
     {
-        private Action<string> _updateTextBlockUI;
+        private Action<string, SolidColorBrush> _updateTextBlockUI;
         CancellationToken _ct;
 
-        public HelperFunctions(Action<string> updateTextBlockUI, CancellationToken ct)
+        public HelperFunctions(Action<string, SolidColorBrush> updateTextBlockUI, CancellationToken ct)
         { 
             _updateTextBlockUI = updateTextBlockUI;
             _ct = ct;
@@ -39,7 +40,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
 
             return shortenedPath.TrimEnd('\\');
@@ -60,7 +61,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                     if (_ct.IsCancellationRequested)
                     {
-                        _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".");
+                        _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".", Brushes.Red);
                         return;
                     }
 
@@ -100,13 +101,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     }
                     catch (Exception ex)
                     {
-                        _updateTextBlockUI(ex.Message);
+                        _updateTextBlockUI(ex.Message, Brushes.Red);
                     }
                 });
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
 
@@ -148,7 +149,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
 
@@ -182,7 +183,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
 
@@ -200,7 +201,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
 
@@ -215,7 +216,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
     }

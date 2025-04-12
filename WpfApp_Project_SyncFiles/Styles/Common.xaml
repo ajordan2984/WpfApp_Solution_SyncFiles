@@ -4,12 +4,8 @@
                    xmlns:MySampleConverter="clr-namespace:WpfApp_Project_SyncFiles.Converters">
 
     <!--Icons-->
-    <BitmapImage x:Key="ColorDataGridIcon" UriSource="pack://application:,,,/Images/ColorDataGridIcon.png" />
     <BitmapImage x:Key="FileDialogIcon" UriSource="pack://application:,,,/Images/FileDialogIcon.png" />
     <BitmapImage x:Key="LoadingDialogIcon" UriSource="pack://application:,,,/Images/LoadingDialogIcon.png" />
-    <BitmapImage x:Key="MainWindowIcon" UriSource="pack://application:,,,/Images/MainWindowIcon.png" />
-    <BitmapImage x:Key="PeopleDataGridIcon" UriSource="pack://application:,,,/Images/PeopleDataGridIcon.png" />
-    <BitmapImage x:Key="PictureMessageBoxIcon" UriSource="pack://application:,,,/Images/PictureMessageBoxIcon.png" />
     <BitmapImage x:Key="SinkIcon" UriSource="pack://application:,,,/Images/SinkIcon.png" />
 
     <!--Converters-->
@@ -73,7 +69,7 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="LightBlue"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="Background" Value="LightCoral"/>
+        <Setter Property="Background" Value="SkyBlue"/>
         <Setter Property="Margin" Value="5,0,5,5"/>
     </Style>
 

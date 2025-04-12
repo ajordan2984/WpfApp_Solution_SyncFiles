@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Project_SyncFiles"
+        xmlns:Helpers="clr-namespace:WpfApp_Project_SyncFiles.Helpers" xmlns:viewmodels="clr-namespace:WpfApp_Project_SyncFiles.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Sync User Files" Height="735" Width="1000" Icon="{DynamicResource SinkIcon}" ResizeMode="CanMinimize" Background="MediumPurple">
     <Grid Height="700" VerticalAlignment="Top">
@@ -107,7 +108,7 @@
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <TextBlock Text="{Binding StatusText}" Foreground="{Binding TextColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <TextBlock Helpers:TextBlockHelper.BindableInlines="{Binding Inlines}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </ScrollViewer>
         </Border>
 

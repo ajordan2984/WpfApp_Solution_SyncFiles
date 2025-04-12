@@ -5,17 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Models;
 
 namespace WpfApp_Project_SyncFiles.Helpers
 {
     public class GetAllFilesAndFoldersHelper
     {
-        private Action<string> _updateTextBlockUI;
+        private Action<string, SolidColorBrush> _updateTextBlockUI;
         private CancellationToken _ct;
         private string _startingDirectory;
 
-        public GetAllFilesAndFoldersHelper(Action<string> updateTextBlockUI, CancellationToken token)
+        public GetAllFilesAndFoldersHelper(Action<string, SolidColorBrush> updateTextBlockUI, CancellationToken token)
         {
             _updateTextBlockUI = updateTextBlockUI;
             _ct = token;
@@ -29,7 +30,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 if (File.Exists(pathToChangesFile))
                 {
-                    _updateTextBlockUI($"File \"{pathToChangesFile}\" found. Reading the file contents.");
+                    _updateTextBlockUI($"File \"{pathToChangesFile}\" found. Reading the file contents.", Brushes.Blue);
 
                     string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
@@ -41,16 +42,16 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         sortedFiles.Add(lines[i].Replace(oldPathRoot, newPathRoot), fih);
                     }
 
-                    _updateTextBlockUI($"Completed reading the file contents from: \"{ pathToChangesFile}\"");
+                    _updateTextBlockUI($"Completed reading the file contents from: \"{ pathToChangesFile}\"", Brushes.Blue);
                 }
                 else
                 {
-                    _updateTextBlockUI($"Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.");
+                    _updateTextBlockUI($"Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.", Brushes.Black);
                 }
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
 
             return sortedFiles;
@@ -60,7 +61,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             _startingDirectory = startingDirectory;
 
-            _updateTextBlockUI($@"Getting all folders from: {_startingDirectory}");
+            _updateTextBlockUI($@"Getting all folders from: {_startingDirectory}", Brushes.Blue);
 
             List<string> allDirectories =
                 Directory.GetDirectories(startingDirectory)
@@ -76,7 +77,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                         if (_ct.IsCancellationRequested)
                         {
-                            _updateTextBlockUI($@"Cancelling getting all folders from: {_startingDirectory}.");
+                            _updateTextBlockUI($@"Cancelling getting all folders from: {_startingDirectory}.", Brushes.Red);
                             return new List<string>();
                         }
 
@@ -84,22 +85,22 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     }
                     catch (Exception ex)
                     {
-                        _updateTextBlockUI(ex.Message);
+                        _updateTextBlockUI(ex.Message, Brushes.Red);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
 
-            _updateTextBlockUI($@"Completed getting all folders from: {_startingDirectory}.");
+            _updateTextBlockUI($@"Completed getting all folders from: {_startingDirectory}.", Brushes.Blue);
             return allDirectories;
         }
 
         public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)
         {
-            _updateTextBlockUI($@"Getting all files from: {_startingDirectory}");
+            _updateTextBlockUI($@"Getting all files from: {_startingDirectory}", Brushes.Blue);
 
             SortedDictionary<string, FileInfoHolderModel> allSortedFiles = new();
             ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new();
@@ -107,7 +108,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($@"Cancelling getting all files.");
+                _updateTextBlockUI($@"Cancelling getting all files.", Brushes.Red);
                 return new SortedDictionary<string, FileInfoHolderModel>();
             }
 
@@ -126,7 +127,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 }
             }
 
-            _updateTextBlockUI($@"Completed getting all files from: {_startingDirectory}.");
+            _updateTextBlockUI($@"Completed getting all files from: {_startingDirectory}.", Brushes.Blue);
             return allSortedFiles;
         }
 
@@ -153,7 +154,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
     }

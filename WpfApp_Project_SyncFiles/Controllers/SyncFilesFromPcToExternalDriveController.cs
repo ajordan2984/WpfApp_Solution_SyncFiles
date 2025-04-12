@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Helpers;
 using WpfApp_Project_SyncFiles.Models;
 
@@ -9,7 +10,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 {
     public class SyncFilesFromPcToExternalDriveController
     {
-        private Action<string> _updateTextBlockUI;
+        private Action<string, SolidColorBrush> _updateTextBlockUI;
 
         private string _pathToFilesOnPc;
         private string _pathToFilesOnExternal;
@@ -24,7 +25,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
         private HelperFunctions _hf;
     
 
-        public SyncFilesFromPcToExternalDriveController(Action<string> updateTextBlockUI, CancellationToken ct)
+        public SyncFilesFromPcToExternalDriveController(Action<string, SolidColorBrush> updateTextBlockUI, CancellationToken ct)
         {
             _updateTextBlockUI = updateTextBlockUI;
             _ct = ct;
@@ -48,13 +49,13 @@ namespace WpfApp_Project_SyncFiles.Controllers
         {
             GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI, _ct);
 
-            _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"");
+            _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"", Brushes.Blue);
             _allSortedFilesFromFromExternalDrive = gafh.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".");
+                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
                 return false;
             }
 
@@ -66,54 +67,54 @@ namespace WpfApp_Project_SyncFiles.Controllers
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".");
+                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             _hf.CopyFilesFromOneDriveToAnotherDrive(
                 _allSortedFilesFromPcPath,
                 _allSortedFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
                 _shortPathToFilesOnExternal);
-            _updateTextBlockUI($"Done copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Done copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".");
+                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Quarantining any files on: \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Quarantining any files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             _hf.QuarantineFiles(
             _allSortedFilesFromPcPath,
             _allSortedFilesFromFromExternalDrive,
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
-            _updateTextBlockUI($"Done quarantining files on: \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Done quarantining files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".");
+                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
             _hf.RecursiveRemoveDirectories(_pathToFilesOnExternal);
-            _updateTextBlockUI($"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".");
+                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allSortedFilesFromFromExternalDrive);
-            _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"");
+            _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
 
             return true;
         }
@@ -126,7 +127,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
             catch (Exception ex)
             {
-                _updateTextBlockUI(ex.Message);
+                _updateTextBlockUI(ex.Message, Brushes.Red);
             }
         }
     }
