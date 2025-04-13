@@ -299,7 +299,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ = _dispatcher.BeginInvoke(new Action(() =>
                   {
-                      string text = DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine;
+                      string text = DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine + Environment.NewLine;
                       Run run = new(text) { Foreground = textColor };
                       Inlines.Add(run);
                   }));
