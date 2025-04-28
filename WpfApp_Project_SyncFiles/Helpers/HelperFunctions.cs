@@ -191,15 +191,15 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        public void RecursiveRemoveDirectories(string subDirectory)
+        public void RecursiveRemoveDirectories(string directory)
         {
             try
             {
-                List<string> allDirectories = new(Directory.GetDirectories(subDirectory));
+                List<string> allDirectories = new(Directory.GetDirectories(directory));
 
                 if (allDirectories.Count > 0)
                 {
-                    foreach (string directory in allDirectories)
+                    foreach (string subDirectory in allDirectories)
                     {
                         // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                         if (_ct.IsCancellationRequested)
@@ -218,12 +218,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     }
                 }
 
-                string[] hasFiles = Directory.GetFiles(subDirectory);
-                string[] hasSubDirectories = Directory.GetDirectories(subDirectory);
+                string[] hasFiles = Directory.GetFiles(directory);
+                string[] hasSubDirectories = Directory.GetDirectories(directory);
 
                 if (hasFiles.Length == 0 && hasSubDirectories.Length == 0)
                 {
-                    Directory.Delete(subDirectory);
+                    Directory.Delete(directory);
                 }
             }
             catch (Exception ex)
