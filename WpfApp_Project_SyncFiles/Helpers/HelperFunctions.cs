@@ -16,7 +16,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         CancellationToken _ct;
 
         public HelperFunctions(Action<string, SolidColorBrush> updateTextBlockUI, CancellationToken ct)
-        { 
+        {
             _updateTextBlockUI = updateTextBlockUI;
             _ct = ct;
         }
@@ -153,10 +153,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        public void RecursiveRemoveDirectories(string directory)
+        public void ParallelRecursiveRemoveDirectories(string directory)
         {
             try
             {
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+
                 // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                 if (_ct.IsCancellationRequested)
                 {
@@ -165,26 +167,70 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 List<string> allDirectories = new(Directory.GetDirectories(directory));
 
-                if (allDirectories.Count > 0)
+                Parallel.ForEach(allDirectories, options, subDirectory =>
                 {
-                    foreach (string subDirectory in allDirectories)
+                    // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                    if (_ct.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    try
                     {
                         RecursiveRemoveDirectories(subDirectory);
                     }
+                    catch (Exception ex)
+                    {
+                        _updateTextBlockUI(ex.Message, Brushes.Red);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message, Brushes.Red);
+            }
+        }
+
+        public void RecursiveRemoveDirectories(string subDirectory)
+        {
+            try
+            {
+                List<string> allDirectories = new(Directory.GetDirectories(subDirectory));
+
+                if (allDirectories.Count > 0)
+                {
+                    foreach (string directory in allDirectories)
+                    {
+                        // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                        if (_ct.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        try
+                        {
+                            RecursiveRemoveDirectories(subDirectory);
+                        }
+                        catch (Exception ex)
+                        {
+                            _updateTextBlockUI(ex.Message, Brushes.Red);
+                        }
+                    }
                 }
 
-                string[] hasFiles = Directory.GetFiles(directory);
-                string[] hasSubDirectories = Directory.GetDirectories(directory);
+                string[] hasFiles = Directory.GetFiles(subDirectory);
+                string[] hasSubDirectories = Directory.GetDirectories(subDirectory);
 
                 if (hasFiles.Length == 0 && hasSubDirectories.Length == 0)
                 {
-                    Directory.Delete(directory);
+                    Directory.Delete(subDirectory);
                 }
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
             }
+
         }
 
         public void UpdateChangesFile(string pathToChangesFile, SortedDictionary<string, FileInfoHolderModel> allSortedFilesFromFromExternalDrive)

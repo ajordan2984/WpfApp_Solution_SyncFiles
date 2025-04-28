@@ -102,7 +102,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
 
             _updateTextBlockUI($"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
-            _hf.RecursiveRemoveDirectories(_pathToFilesOnExternal);
+            _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal);
             _updateTextBlockUI($"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
