@@ -63,9 +63,10 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             _updateTextBlockUI($@"Getting all folders from: {_startingDirectory}", Brushes.Blue);
 
-            List<string> allDirectories =
-                Directory.GetDirectories(startingDirectory)
-                .Where(dir => !dir.Contains("GitHub"))
+            List<string> excludeDirectories = new() { "GitHub", "My Music", "My Videos", "My Pictures" };
+
+            List<string> allDirectories = Directory.GetDirectories(startingDirectory)
+                .Where(dir => !excludeDirectories.Any(exclude => dir.Contains(exclude)))
                 .ToList();
 
             try

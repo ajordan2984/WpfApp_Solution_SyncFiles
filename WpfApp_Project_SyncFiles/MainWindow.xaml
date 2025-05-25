@@ -37,19 +37,19 @@
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="6">
-            External Folder 1
+            Select External Folder 1
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="7">
-            External Folder 2
+            Select External Folder 2
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="8">
-            External Folder 3
+            Select External Folder 3
         </Button>
 
         <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="9">
-            External Folder 4
+            Select External Folder 4
         </Button>
 
         <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="10">

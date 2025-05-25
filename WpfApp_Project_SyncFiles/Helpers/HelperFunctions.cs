@@ -73,8 +73,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     }
                     else
                     {
-                        var pcFih = filesFromPcPath[file];
-                        var exFih = filesFromExternalDrive[destinationPathForFile];
+                        FileInfoHolderModel pcFih = filesFromPcPath[file];
+                        FileInfoHolderModel exFih = filesFromExternalDrive[destinationPathForFile];
 
                         if (pcFih.Modified > exFih.Modified)
                         {
@@ -85,25 +85,25 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
-                Parallel.ForEach(filesToCopy, options, ftc =>
-                {
+                _ = Parallel.ForEach(filesToCopy, options, ftc =>
+                  {
                     // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                     if (_ct.IsCancellationRequested)
-                    {
-                        return;
-                    }
+                      {
+                          return;
+                      }
 
-                    Directory.CreateDirectory(Path.GetDirectoryName(ftc.Item2));
+                      Directory.CreateDirectory(Path.GetDirectoryName(ftc.Item2));
 
-                    try
-                    {
-                        File.Copy(ftc.Item1, ftc.Item2, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        _updateTextBlockUI(ex.Message, Brushes.Red);
-                    }
-                });
+                      try
+                      {
+                          File.Copy(ftc.Item1, ftc.Item2, true);
+                      }
+                      catch (Exception ex)
+                      {
+                          _updateTextBlockUI(ex.Message, Brushes.Red);
+                      }
+                  });
             }
             catch (Exception ex)
             {
@@ -167,23 +167,23 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 List<string> allDirectories = new(Directory.GetDirectories(directory));
 
-                Parallel.ForEach(allDirectories, options, subDirectory =>
-                {
+                _ = Parallel.ForEach(allDirectories, options, subDirectory =>
+                  {
                     // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                     if (_ct.IsCancellationRequested)
-                    {
-                        return;
-                    }
+                      {
+                          return;
+                      }
 
-                    try
-                    {
-                        RecursiveRemoveDirectories(subDirectory);
-                    }
-                    catch (Exception ex)
-                    {
-                        _updateTextBlockUI(ex.Message, Brushes.Red);
-                    }
-                });
+                      try
+                      {
+                          RecursiveRemoveDirectories(subDirectory);
+                      }
+                      catch (Exception ex)
+                      {
+                          _updateTextBlockUI(ex.Message, Brushes.Red);
+                      }
+                  });
             }
             catch (Exception ex)
             {
@@ -238,7 +238,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             try
             {
                 using StreamWriter writetext = new(pathToChangesFile);
-                foreach (var file in allSortedFilesFromFromExternalDrive)
+                foreach (KeyValuePair<string, FileInfoHolderModel> file in allSortedFilesFromFromExternalDrive)
                 {
                     writetext.WriteLine(file.Key);
                     writetext.WriteLine(file.Value.Modified);
