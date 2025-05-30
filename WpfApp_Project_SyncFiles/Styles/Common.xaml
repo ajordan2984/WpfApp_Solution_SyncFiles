@@ -55,6 +55,17 @@
         <Setter Property="Margin" Value="0,0,10,5"/>
     </Style>
 
+    <!--ListBox-->
+    <Style TargetType="ListBox">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style TargetType="ListBoxItem">
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
+
     <!--TextBlock-->
     <Style TargetType="TextBlock">
         <Setter Property="TextAlignment" Value="Left"/>

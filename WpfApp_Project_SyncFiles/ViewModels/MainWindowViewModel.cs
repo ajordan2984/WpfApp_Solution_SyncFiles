@@ -39,14 +39,18 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel(Dispatcher dispatcher)
         {
+            ListBoxItems = new ObservableCollection<string>();
             Inlines = new ObservableCollection<Inline>();
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
-            UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("0"));
-            UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("1"));
-            UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("2"));
-            UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("3"));
-            UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("4"));
+            UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
+            AddExcludedPcPath = new RelayCommand(execute => Browse("ListBoxItemAdd"));
+            RemoveExcludedPcPath = new RelayCommand(execute => _iec.AddOrRemoveListBoxItem(false, ListBoxItems, SelectedListBoxItem));
+            UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("ExternalFolder1Path"));
+            UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("ExternalFolder2Path"));
+            UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("ExternalFolder3Path"));
+            UpdateCommandBrowseExternalFolder4 = new RelayCommand(execute => Browse("ExternalFolder4Path"));
+
             UpdateCommandSyncFiles = new RelayCommand(async execute => await StartTasksAsync());
             UpdateCommandClearLogUI = new RelayCommand(execute => ClearLogUI());
             UpdateCommandCancelSync = new RelayCommand(execute => CancelSync());
@@ -145,6 +149,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         // Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
+        public RelayCommand AddExcludedPcPath { get; set; }
+        public RelayCommand RemoveExcludedPcPath { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder1 { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder2 { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder3 { get; set; }
@@ -164,8 +170,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public void Browse(string selectedTextBox)
         {
-            var childView = new FileDialogView();
-            var childModel = new FileDialogViewModel(childView.Close);
+            FileDialogView childView = new();
+            FileDialogViewModel childModel = new(childView.Close);
             childView.DataContext = childModel;
             childView.ShowDialog();
 
@@ -175,20 +181,23 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                 switch (selectedTextBox)
                 {
-                    case "0":
+                    case "PcPath":
                         PcPath = path;
                         break;
-                    case "1":
+                    case "ExternalFolder1Path":
                         ExternalFolder1Path = path;
                         break;
-                    case "2":
+                    case "ExternalFolder2Path":
                         ExternalFolder2Path = path;
                         break;
-                    case "3":
+                    case "ExternalFolder3Path":
                         ExternalFolder3Path = path;
                         break;
-                    case "4":
+                    case "ExternalFolder4Path":
                         ExternalFolder4Path = path;
+                        break;
+                    case "ListBoxItemAdd":
+                        _iec.AddOrRemoveListBoxItem(true, ListBoxItems, path);
                         break;
                     default:
                         MessageBox.Show("An error occured in the Browse function.", "Alert");

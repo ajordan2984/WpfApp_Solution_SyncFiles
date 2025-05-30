@@ -8,7 +8,7 @@ namespace WpfApp_Project_SyncFiles.Models
     public class TreeServiceModel : ITreeServiceModel
     {
         #region Private Members
-        private ObservableCollection<ITreeNodeModel> _folders = null;
+        private ObservableCollection<ITreeNodeModel> _folders;
         #endregion
 
         #region Constructors
@@ -24,13 +24,13 @@ namespace WpfApp_Project_SyncFiles.Models
                 if (_folders == null)
                 {
                     _folders = new ObservableCollection<ITreeNodeModel>();
-                    var drives = DriveInfo.GetDrives();
+                    DriveInfo[] drives = DriveInfo.GetDrives();
 
-                    foreach (var drive in drives)
+                    foreach (DriveInfo drive in drives)
                     {
                         if (drive.IsReady)
                         {
-                            FolderNodeModel rootNode = new FolderNodeModel(drive.Name, drive.Name, this);
+                            FolderNodeModel rootNode = new(drive.Name, drive.Name, this);
                             _folders.Add(rootNode);
                         }
                     }
@@ -57,7 +57,7 @@ namespace WpfApp_Project_SyncFiles.Models
         {
             if (SelectedItem != null && SelectedItem.GetType() == typeof(FolderNodeModel))
             {
-                var folder = (FolderNodeModel)SelectedItem;
+                FolderNodeModel folder = (FolderNodeModel)SelectedItem;
                 folder.Children.Add(new FolderNodeModel(name, (FolderNodeModel)SelectedItem, folder.LinkToTree));
             }
         }
@@ -72,7 +72,7 @@ namespace WpfApp_Project_SyncFiles.Models
                 }
                 else if (SelectedItem.GetType() == typeof(FolderNodeModel))
                 {
-                    var folder = (FolderNodeModel)SelectedItem;
+                    FolderNodeModel folder = (FolderNodeModel)SelectedItem;
                     if (folder.Children.Count == 0)
                     {
                         SelectedItem.Parent.Children.Remove(SelectedItem);

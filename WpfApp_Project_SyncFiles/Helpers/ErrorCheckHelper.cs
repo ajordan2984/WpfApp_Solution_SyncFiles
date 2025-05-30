@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using WpfApp_Project_SyncFiles.Interfaces;
 using WpfApp_Project_SyncFiles.Models;
@@ -9,6 +10,22 @@ namespace WpfApp_Project_SyncFiles.Helpers
     {
         public ErrorCheckHelper()
         {
+        }
+
+        public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> ListBoxItems, string folder)
+        {
+            if (add)
+            {
+                ListBoxItems.Remove(folder);
+                ListBoxItems.Add(folder);
+            }
+            else
+            {
+                if (ListBoxItems != null && string.IsNullOrEmpty(folder))
+                {
+                    ListBoxItems.Remove(folder);
+                }
+            }
         }
         
         HasErrorModel IErrorCheck.CheckPaths(string pcFolderPath, Dictionary<string, string> textBoxes)

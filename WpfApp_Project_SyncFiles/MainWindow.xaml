@@ -41,6 +41,14 @@
                 PC Folder
             </Button>
 
+            <Button Command="{Binding AddExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="5">
+                Select Folders
+            </Button>
+
+            <Button Command="{Binding RemoveExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="3" Grid.Row="5">
+                Remove Folder
+            </Button>
+
             <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="10">
                 Select External Folder 1
             </Button>
