@@ -22,6 +22,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
     class MainWindowViewModel : INotifyPropertyChanged
     {
         #region Private Members
+        private string _selectedListBoxItem;
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
         private static string _PcPath;
@@ -57,6 +58,16 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         }
 
         #region XAML Bindings
+        public string SelectedListBoxItem
+        {
+            get => _selectedListBoxItem;
+            set
+            {
+                _selectedListBoxItem = value;
+                OnPropertyChanged(nameof(SelectedListBoxItem));
+            }
+        }
+        public ObservableCollection<string> ListBoxItems { get; set; }
         public ObservableCollection<Inline> Inlines { get; }
         public bool AreTextBoxesEnabled
         {
