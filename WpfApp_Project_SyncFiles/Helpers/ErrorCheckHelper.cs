@@ -21,7 +21,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
             else
             {
-                if (ListBoxItems != null && string.IsNullOrEmpty(folder))
+                if (ListBoxItems != null && !string.IsNullOrEmpty(folder))
                 {
                     ListBoxItems.Remove(folder);
                 }
