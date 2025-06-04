@@ -18,6 +18,8 @@ namespace WpfApp_Project_SyncFiles.Controllers
         private string _shortPathToFilesOnPc;
         private string _shortPathToFilesOnExternal;
 
+        ConcurrentBag<string> _ConcurrentListBoxItems;
+
         private ConcurrentDictionary<string, FileInfoHolderModel> _allSortedFilesFromPcPath;
         private SortedDictionary<string, FileInfoHolderModel> _allSortedFilesFromFromExternalDrive;
 
@@ -30,6 +32,11 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _updateTextBlockUI = updateTextBlockUI;
             _ct = ct;
             _hf = new HelperFunctions(updateTextBlockUI, _ct);
+        }
+
+        public void SetConcurrentListBoxItems(ConcurrentBag<string> concurrentListBoxItems)
+        {
+            _ConcurrentListBoxItems = concurrentListBoxItems;
         }
 
         public void SetAllSortedFilesFromPcPath(ConcurrentDictionary<string, FileInfoHolderModel> files)
@@ -61,7 +68,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
             if (_allSortedFilesFromFromExternalDrive.Count == 0)
             {
-                _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal));
+                _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems));
             }
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -57,16 +58,15 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return sortedFiles;
         }
 
-        public List<string> GetAllDirectories(string startingDirectory)
+        public List<string> GetAllDirectories(string startingDirectory, ConcurrentBag<string> ConcurrentListBoxItems)
         {
             _startingDirectory = startingDirectory;
 
             _updateTextBlockUI($@"Getting all folders from: {_startingDirectory}", Brushes.Blue);
 
-            List<string> excludeDirectories = new() { "GitHub", "My Music", "My Videos", "My Pictures" };
-
-            List<string> allDirectories = Directory.GetDirectories(startingDirectory)
-                .Where(dir => !excludeDirectories.Any(exclude => dir.Contains(exclude)))
+            List<string> filteredList = new();
+            List<string> allDirectories = new List<string>(Directory.GetDirectories(startingDirectory))
+                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
                 .ToList();
 
             try
@@ -89,6 +89,10 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         _updateTextBlockUI(ex.Message, Brushes.Red);
                     }
                 }
+
+                filteredList = allDirectories
+                            .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
+                            .ToList();
             }
             catch (Exception ex)
             {
@@ -96,7 +100,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
 
             _updateTextBlockUI($@"Completed getting all folders from: {_startingDirectory}.", Brushes.Blue);
-            return allDirectories;
+            return filteredList;
         }
 
         public SortedDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)

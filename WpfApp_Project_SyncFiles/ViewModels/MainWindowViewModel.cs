@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
         private static string _PcPath;
+        private static string _ManualTextBoxExcludedPath;
         private static string _ExternalFolder1Path;
         private static string _ExternalFolder2Path;
         private static string _ExternalFolder3Path;
@@ -44,6 +46,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
+            ManualButtonExcludedPath = new RelayCommand(execute => _iec.AddOrRemoveListBoxItem(true, ListBoxItems, ManualTextBoxExcludedPath));
             AddExcludedPcPath = new RelayCommand(execute => Browse("ListBoxItemAdd"));
             RemoveExcludedPcPath = new RelayCommand(execute => _iec.AddOrRemoveListBoxItem(false, ListBoxItems, SelectedListBoxItem));
             UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("ExternalFolder1Path"));
@@ -106,6 +109,15 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 OnPropertyChanged(nameof(PcPath));
             }
         }
+        public string ManualTextBoxExcludedPath
+        {
+            get => _ManualTextBoxExcludedPath;
+            set
+            {
+                _ManualTextBoxExcludedPath = value;
+                OnPropertyChanged(nameof(ManualTextBoxExcludedPath));
+            }
+        }
         public string ExternalFolder1Path
         {
             get => _ExternalFolder1Path;
@@ -149,6 +161,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         // Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
+        public RelayCommand ManualButtonExcludedPath { get; set; }
         public RelayCommand AddExcludedPcPath { get; set; }
         public RelayCommand RemoveExcludedPcPath { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder1 { get; set; }
@@ -226,7 +239,9 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                     GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI, _cts.Token);
 
-                    List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath);
+                    ConcurrentBag<string> ConcurrentListBoxItems = new(ListBoxItems);
+
+                    List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath, ConcurrentListBoxItems);
                     SortedDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
                     ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                     List<Task> tasks = new();
@@ -240,6 +255,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                           Task.Run(() =>
                           {
                               SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
+                              _main.SetConcurrentListBoxItems(ConcurrentListBoxItems);
                               _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                               _main.SetPaths(pcFolderFromTextBox, externalFolder);
                               bool completed = _main.SyncFiles();

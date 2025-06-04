@@ -14,16 +14,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
         public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> ListBoxItems, string folder)
         {
-            if (add)
+            if (!string.IsNullOrEmpty(folder))
             {
                 ListBoxItems.Remove(folder);
-                ListBoxItems.Add(folder);
-            }
-            else
-            {
-                if (ListBoxItems != null && !string.IsNullOrEmpty(folder))
+                
+                if (add)
                 {
-                    ListBoxItems.Remove(folder);
+                    ListBoxItems.Add(folder);
                 }
             }
         }
