@@ -26,6 +26,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private string _selectedListBoxItem;
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
+        private bool _isProgressBarRunning;
         private static string _PcPath;
         private static string _ManualTextBoxExcludedPath;
         private static string _ExternalFolder1Path;
@@ -97,6 +98,18 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 {
                     _areButtonsEnabled = value;
                     OnPropertyChanged(nameof(AreButtonsEnabled));
+                }
+            }
+        }
+        public bool IsProgressBarRunning
+        {
+            get => _isProgressBarRunning;
+            set
+            {
+                if (_isProgressBarRunning != value)
+                {
+                    _isProgressBarRunning = value;
+                    OnPropertyChanged(nameof(IsProgressBarRunning));
                 }
             }
         }

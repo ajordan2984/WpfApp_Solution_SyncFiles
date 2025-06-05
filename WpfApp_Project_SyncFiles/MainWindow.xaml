@@ -30,6 +30,7 @@
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="100*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="70*" />
                 <RowDefinition Height="70*" />
                 <RowDefinition Height="70*" />
@@ -54,31 +55,31 @@
                 Remove Excluded Folder
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="11">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="12">
                 Select External Folder 1
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="12">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="13">
                 Select External Folder 2
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="13">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="14">
                 Select External Folder 3
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="14">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="15">
                 Select External Folder 4
             </Button>
 
-            <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="15">
+            <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="16">
                 Sync Files
             </Button>
 
-            <Button Command="{Binding UpdateCommandClearLogUI}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="2" Grid.Row="15">
+            <Button Command="{Binding UpdateCommandClearLogUI}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="2" Grid.Row="16">
                 Clear Log
             </Button>
 
-            <Button Command="{Binding UpdateCommandCancelSync}" Grid.Column="3" Grid.Row="15">
+            <Button Command="{Binding UpdateCommandCancelSync}" Grid.Column="3" Grid.Row="16">
                 Cancel Sync
             </Button>
 
@@ -111,22 +112,22 @@
                 <TextBox Text="{Binding Path=ManualTextBoxExcludedPath}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="11"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="12"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder1Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="12"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="13"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder2Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="13"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="14"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder3Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="14"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="15"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder4Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
@@ -157,6 +158,17 @@
                     <TextBlock Helpers:TextBlockHelper.BindableInlines="{Binding Inlines}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </ScrollViewer>
             </Border>
+
+            <ProgressBar 
+                Height="20"
+                Width="auto"
+                Margin="5,0,5,5"
+                IsIndeterminate="True"
+                Grid.Column="0" 
+                Grid.ColumnSpan="5" 
+                Grid.Row="11"
+                Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}" />
+
         </Grid>
     </ScrollViewer>
 </Window>

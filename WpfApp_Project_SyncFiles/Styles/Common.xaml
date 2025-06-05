@@ -10,6 +10,7 @@
 
     <!--Converters-->
     <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
+    <MySampleConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <!-- Windows -->
     <Style TargetType="Window">
         <Setter Property="FontFamily" Value="Arial Rounded MT" />
