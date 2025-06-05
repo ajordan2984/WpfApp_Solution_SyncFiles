@@ -241,38 +241,42 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                     ConcurrentBag<string> ConcurrentListBoxItems = new(ListBoxItems);
 
-                    List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath, ConcurrentListBoxItems);
-                    SortedDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
-                    ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
-                    List<Task> tasks = new();
-
-                    foreach (string folderTextBoxKey in _ttbuh.ExternalFoldersSelected.Keys)
+                    await Task.Run(async () =>
                     {
-                        string externalFolder = _ttbuh.ExternalFoldersSelected[folderTextBoxKey];
-                        string pcFolderFromTextBox = PcPath;
+                        List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath, ConcurrentListBoxItems);
+                        SortedDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
+                        ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
+                        List<Task> tasks = new();
 
-                        tasks.Add(
-                          Task.Run(() =>
-                          {
-                              SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
-                              _main.SetConcurrentListBoxItems(ConcurrentListBoxItems);
-                              _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
-                              _main.SetPaths(pcFolderFromTextBox, externalFolder);
-                              bool completed = _main.SyncFiles();
+                        foreach (string folderTextBoxKey in _ttbuh.ExternalFoldersSelected.Keys)
+                        {
+                            string externalFolder = _ttbuh.ExternalFoldersSelected[folderTextBoxKey];
+                            string pcFolderFromTextBox = PcPath;
 
-                              if (completed)
+                            tasks.Add(
+                              Task.Run(() =>
                               {
-                                  UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".", Brushes.Black);
-                              }
-                              else
-                              {
-                                  UpdateTextBlockUI($"Syncing your files to \"{externalFolder}\" was Canceled by the user.", Brushes.Red);
-                                  _main.RemoveUpdateChangesFile();
-                              }
-                          }));
-                    }
+                                  SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
+                                  _main.SetConcurrentListBoxItems(ConcurrentListBoxItems);
+                                  _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
+                                  _main.SetPaths(pcFolderFromTextBox, externalFolder);
+                                  bool completed = _main.SyncFiles();
 
-                    await Task.WhenAll(tasks);
+                                  if (completed)
+                                  {
+                                      UpdateTextBlockUI($"Completed syncing your files to \"{externalFolder}\".", Brushes.Black);
+                                  }
+                                  else
+                                  {
+                                      UpdateTextBlockUI($"Syncing your files to \"{externalFolder}\" was Canceled by the user.", Brushes.Red);
+                                      _main.RemoveUpdateChangesFile();
+                                  }
+                              }));
+                        }
+
+                        await Task.WhenAll(tasks);
+
+                    });
 
                     FlipTextBoxesUI(true);
                     FlipButtonsUI(true);
