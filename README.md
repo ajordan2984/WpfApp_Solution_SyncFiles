@@ -17,7 +17,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 - The program scans a selected folder on your PC.
 - It then **compares** the contents of that PC folder to an external backup folder.
 - On the **first run**, it creates a `.txt` file listing **all files** currently in the external folder.
-  - On **subsequent runs**, instead of re-scanning the external folder (which can be slow with thousands of files), the utility simply **reads from this file** to get an instant snapshot of what's already backed up.
+  - On **subsequent runs**, instead of re-scanning the external folder (which can be slow with thousands of files), the utility simply **reads from this file** to get an instant snapshot of what's already backed up and then updates the `.txt` file at the end with any file changes.
 - It then compares both file structures:
   - **New files** in the PC folder are **copied over** to the external folder.
   - If a **file or folder is renamed** on the PC, the utility will:
