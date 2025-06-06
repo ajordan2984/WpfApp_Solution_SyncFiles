@@ -247,6 +247,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     _cts = new CancellationTokenSource();
                     FlipTextBoxesUI(false);
                     FlipButtonsUI(false);
+                    FlipProgressBarUI(true);
 
                     UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.", Brushes.Black);
 
@@ -288,11 +289,11 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                         }
 
                         await Task.WhenAll(tasks);
-
                     });
 
                     FlipTextBoxesUI(true);
                     FlipButtonsUI(true);
+                    FlipProgressBarUI(false);
                 }
             }
             catch (Exception ex)
@@ -344,6 +345,14 @@ namespace WpfApp_Project_SyncFiles.ViewModels
               {
                   AreButtonsEnabled = isEnabled;
               });
+        }
+
+        public void FlipProgressBarUI(bool isEnabled)
+        {
+            _ = _dispatcher.BeginInvoke(() =>
+            {
+                IsProgressBarRunning = isEnabled;
+            });
         }
 
         private void UpdateTextBlockUI(string newMessage, SolidColorBrush textColor)

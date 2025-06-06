@@ -17,14 +17,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
             if (!string.IsNullOrEmpty(folder))
             {
                 ListBoxItems.Remove(folder);
-                
+
                 if (add)
                 {
                     ListBoxItems.Add(folder);
                 }
             }
         }
-        
+
         HasErrorModel IErrorCheck.CheckPaths(string pcFolderPath, Dictionary<string, string> textBoxes)
         {
             if (string.IsNullOrEmpty(pcFolderPath))
@@ -49,6 +49,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 if (externalFolderPath == pcFolderPath)
                 {
                     return new HasErrorModel(true, "Error: The PC folder and External folder cannot be the same. Please Try again.");
+                }
+
+                if (externalFolderPath[0] == pcFolderPath[0])
+                {
+                    return new HasErrorModel(true, $"Error: The PC folder \"{pcFolderPath}\" and External folder \"{externalFolderPath}\" start with the same drive letter. Please Try again.");
                 }
 
                 if (!Directory.Exists(externalFolderPath))

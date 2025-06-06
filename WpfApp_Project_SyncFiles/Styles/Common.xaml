@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                   xmlns:MySampleConverter="clr-namespace:WpfApp_Project_SyncFiles.Converters">
+                   xmlns:ConverterLocation="clr-namespace:WpfApp_Project_SyncFiles.Converters">
 
     <!--Icons-->
     <BitmapImage x:Key="FileDialogIcon" UriSource="pack://application:,,,/Images/FileDialogIcon.png" />
@@ -9,8 +9,8 @@
     <BitmapImage x:Key="SinkIcon" UriSource="pack://application:,,,/Images/SinkIcon.png" />
 
     <!--Converters-->
-    <MySampleConverter:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
-    <MySampleConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <ConverterLocation:PathToBitmapImageConverter x:Key="PathToBitmapImageConverter"/>
+    <ConverterLocation:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <!-- Windows -->
     <Style TargetType="Window">
         <Setter Property="FontFamily" Value="Arial Rounded MT" />
@@ -42,7 +42,7 @@
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="SnapsToDevicePixels" Value="False"/>
         <Setter Property="Background" Value="BlanchedAlmond"/>
-        <Setter Property="Margin" Value="5,0,10,5"/>
+        <Setter Property="Margin" Value="5,3,10,5"/>
     </Style>
 
     <!--TextBox Border-->

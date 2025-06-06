@@ -167,7 +167,8 @@
                 Grid.Column="0" 
                 Grid.ColumnSpan="5" 
                 Grid.Row="11"
-                Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}" />
+                Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}" 
+             />
 
         </Grid>
     </ScrollViewer>
