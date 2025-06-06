@@ -95,7 +95,7 @@
 
             <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                <TextBox Text="Please add or select the folders from your PC to excluded from backup" 
+                <TextBox Text="(Optional) Please add or select the folders from inside the selected PC folder to excluded from backup" 
                          HorizontalAlignment="Stretch" 
                          VerticalAlignment="Stretch" 
                          TextAlignment="Center"
