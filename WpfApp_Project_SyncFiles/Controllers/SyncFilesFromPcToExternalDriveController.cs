@@ -21,7 +21,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
         ConcurrentBag<string> _ConcurrentListBoxItems;
 
         private ConcurrentDictionary<string, FileInfoHolderModel> _allSortedFilesFromPcPath;
-        private SortedDictionary<string, FileInfoHolderModel> _allSortedFilesFromFromExternalDrive;
+        private ConcurrentDictionary<string, FileInfoHolderModel> _allFilesFromFromExternalDrive;
 
         private CancellationToken _ct;
         private HelperFunctions _hf;
@@ -57,7 +57,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI, _ct);
 
             _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"", Brushes.Blue);
-            _allSortedFilesFromFromExternalDrive = gafh.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
+            _allFilesFromFromExternalDrive = gafh.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
@@ -66,9 +66,9 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            if (_allSortedFilesFromFromExternalDrive.Count == 0)
+            if (_allFilesFromFromExternalDrive.Count == 0)
             {
-                _allSortedFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems));
+                _allFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems));
             }
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
@@ -79,12 +79,12 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
 
             _updateTextBlockUI($"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
-            _hf.CopyFilesFromOneDriveToAnotherDrive(
+            int filesCopied = _hf.CopyFilesFromOneDriveToAnotherDrive(
                 _allSortedFilesFromPcPath,
-                _allSortedFilesFromFromExternalDrive,
+                _allFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
                 _shortPathToFilesOnExternal);
-            _updateTextBlockUI($"Done copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            _updateTextBlockUI($"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
@@ -96,7 +96,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _updateTextBlockUI($"Quarantining any files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
             _hf.QuarantineFiles(
             _allSortedFilesFromPcPath,
-            _allSortedFilesFromFromExternalDrive,
+            _allFilesFromFromExternalDrive,
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
             _updateTextBlockUI($"Done quarantining files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
@@ -120,7 +120,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
 
             _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
-            _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allSortedFilesFromFromExternalDrive);
+            _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allFilesFromFromExternalDrive);
             _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
 
             return true;

@@ -258,7 +258,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     await Task.Run(async () =>
                     {
                         List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath, ConcurrentListBoxItems);
-                        SortedDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
+                        ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                         List<Task> tasks = new();
 

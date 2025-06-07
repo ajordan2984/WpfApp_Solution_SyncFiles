@@ -46,44 +46,51 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return shortenedPath.TrimEnd('\\');
         }
 
-        public void CopyFilesFromOneDriveToAnotherDrive(
+        public int CopyFilesFromOneDriveToAnotherDrive(
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromPcPath,
-            SortedDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
-            string _shortPathToFilesOnPc,
-            string _shortPathToFilesOnExternal)
+            ConcurrentDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
+            string shortPathToFilesOnPc,
+            string shortPathToFilesOnExternal)
         {
+            int filesCopied = 0;
             try
             {
-                List<Tuple<string, string>> filesToCopy = new();
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                ConcurrentBag<Tuple<string, string>> filesToCopy = new();
 
-                foreach (string file in filesFromPcPath.Keys)
+                _ = Parallel.ForEach(filesFromPcPath.Keys, options, file =>
                 {
-                    // CANCEL SYNCING FILES TO EXTERNAL FOLDER
-                    if (_ct.IsCancellationRequested)
+                    try
                     {
-                        _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".", Brushes.Red);
-                        return;
-                    }
+                        // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+                        if (_ct.IsCancellationRequested)
+                        {
+                            _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".", Brushes.Red);
+                            return;
+                        }
 
-                    string destinationPathForFile = file.Replace(_shortPathToFilesOnPc, _shortPathToFilesOnExternal);
+                        string destinationPathForFile = file.Replace(shortPathToFilesOnPc, shortPathToFilesOnExternal);
 
-                    if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
-                    {
-                        filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
-                    }
-                    else
-                    {
-                        FileInfoHolderModel pcFih = filesFromPcPath[file];
-                        FileInfoHolderModel exFih = filesFromExternalDrive[destinationPathForFile];
-
-                        if (pcFih.Modified > exFih.Modified)
+                        if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
                         {
                             filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
                         }
-                    }
-                }
+                        else
+                        {
+                            FileInfoHolderModel pcFih = filesFromPcPath[file];
+                            FileInfoHolderModel exFih = filesFromExternalDrive[destinationPathForFile];
 
-                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                            if (pcFih.Modified > exFih.Modified)
+                            {
+                                filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _updateTextBlockUI(ex.Message, Brushes.Red);
+                    }
+                });
 
                 _ = Parallel.ForEach(filesToCopy, options, ftc =>
                   {
@@ -98,6 +105,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       try
                       {
                           File.Copy(ftc.Item1, ftc.Item2, true);
+                          Interlocked.Increment(ref filesCopied);
                       }
                       catch (Exception ex)
                       {
@@ -109,11 +117,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
             }
+
+            return filesCopied;
         }
 
         public void QuarantineFiles(
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromPcPath,
-            SortedDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
+            ConcurrentDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
             string _shortPathToFilesOnPc,
             string _shortPathToFilesOnExternal
             )
@@ -144,7 +154,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 foreach (string key in keysToRemove)
                 {
-                    filesFromExternalDrive.Remove(key);
+                    filesFromExternalDrive.TryRemove(key, out _);
                 }
             }
             catch (Exception ex)
@@ -191,7 +201,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        public void RecursiveRemoveDirectories(string directory)
+        private void RecursiveRemoveDirectories(string directory)
         {
             try
             {
@@ -233,12 +243,12 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
         }
 
-        public void UpdateChangesFile(string pathToChangesFile, SortedDictionary<string, FileInfoHolderModel> allSortedFilesFromFromExternalDrive)
+        public void UpdateChangesFile(string pathToChangesFile, ConcurrentDictionary<string, FileInfoHolderModel> allFilesFromFromExternalDrive)
         {
             try
             {
                 using StreamWriter writetext = new(pathToChangesFile);
-                foreach (KeyValuePair<string, FileInfoHolderModel> file in allSortedFilesFromFromExternalDrive)
+                foreach (KeyValuePair<string, FileInfoHolderModel> file in allFilesFromFromExternalDrive)
                 {
                     writetext.WriteLine(file.Key);
                     writetext.WriteLine(file.Value.Modified);

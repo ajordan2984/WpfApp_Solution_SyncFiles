@@ -2,40 +2,15 @@
 
 namespace WpfApp_Project_SyncFiles.Models
 {
-    public class FileInfoHolderModel
+    public sealed class FileInfoHolderModel
     {
-        private DateTime _Modified;
-        private string _FullFilePath;
-
-
-        public DateTime Modified
-        {
-            get
-            {
-                return _Modified;
-            }
-            set
-            {
-                _Modified = value;
-            }
-        }
-
-        public string FullFilePath
-        {
-            get
-            {
-                return _FullFilePath;
-            }
-            set
-            {
-                _FullFilePath = value;
-            }
-        }
+        public DateTime Modified { get; }
+        public string FullFilePath { get; }
 
         public FileInfoHolderModel(string fullFilePath, DateTime fileModified)
         {
-            _Modified = fileModified;
-            _FullFilePath = fullFilePath;
+            Modified = fileModified;
+            FullFilePath = fullFilePath;
         }
     }
 }
