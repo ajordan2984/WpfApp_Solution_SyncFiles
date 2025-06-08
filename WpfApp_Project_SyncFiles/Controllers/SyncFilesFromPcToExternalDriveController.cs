@@ -66,7 +66,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            if (_allFilesFromFromExternalDrive.Count == 0)
+            if (_allFilesFromFromExternalDrive.IsEmpty)
             {
                 _allFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems));
             }
@@ -84,7 +84,15 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 _allFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
                 _shortPathToFilesOnExternal);
-            _updateTextBlockUI($"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            
+            if (filesCopied > 0)
+            {
+                _updateTextBlockUI($"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".", Brushes.Black);
+            }
+            else
+            {
+                _updateTextBlockUI($"No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".", Brushes.Black);
+            }
             
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)

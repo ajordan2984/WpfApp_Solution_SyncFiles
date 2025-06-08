@@ -74,6 +74,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
                         {
                             filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
+
+                            // Update that the file has been added so it reflects in the "Changes.txt" file
+                            FileInfo fi = new(file);
+                            FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc);
+                            filesFromExternalDrive.TryAdd(destinationPathForFile, fihm);
                         }
                         else
                         {
@@ -83,6 +88,20 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             if (pcFih.Modified > exFih.Modified)
                             {
                                 filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
+
+                                // Update that the file has changed so it reflects in the "Changes.txt" file
+                                FileInfo fi = new(file);
+                                FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc);
+
+                                if (filesFromExternalDrive.TryRemove(destinationPathForFile, out _))
+                                {
+                                    filesFromExternalDrive.TryAdd(destinationPathForFile, fihm);
+                                }
+                                else
+                                {
+                                    _updateTextBlockUI($"File {destinationPathForFile} was copied to external drive.", Brushes.Black);
+                                    _updateTextBlockUI($"Failed to update old date value of {destinationPathForFile} for the \"Changes.txt\" file.", Brushes.Red);
+                                }
                             }
                         }
                     }

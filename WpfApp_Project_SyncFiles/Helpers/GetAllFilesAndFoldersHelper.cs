@@ -37,9 +37,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                     for (int i = 0; i < lines.Length - 1; i += 2)
                     {
-                        FileInfoHolderModel fih = new("", DateTime.Parse(lines[i + 1]).ToUniversalTime());
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
-                        files.TryAdd(lines[i].Replace(oldPathRoot, newPathRoot), fih);
+                        string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
+                        FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]).ToUniversalTime());
+
+                        files.TryAdd(filePathOnExternal, fih);
                     }
 
                     _updateTextBlockUI($"Completed reading the file contents from: \"{ pathToChangesFile}\"", Brushes.Blue);
@@ -189,7 +191,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 foreach (string file in files)
                 {
                     FileInfo fi = new(file);
-                    FileInfoHolderModel fih = new FileInfoHolderModel(file, fi.LastWriteTimeUtc);
+                    FileInfoHolderModel fih = new(file, fi.LastWriteTimeUtc);
                     bagOfAllFiles.Add(fih);
                 }
             }
