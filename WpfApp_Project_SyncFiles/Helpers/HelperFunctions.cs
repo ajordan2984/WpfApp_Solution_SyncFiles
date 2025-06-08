@@ -55,7 +55,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             int filesCopied = 0;
             try
             {
-                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
                 ConcurrentBag<Tuple<string, string>> filesToCopy = new();
 
                 _ = Parallel.ForEach(filesFromPcPath.Keys, options, file =>
@@ -85,7 +85,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             FileInfoHolderModel pcFih = filesFromPcPath[file];
                             FileInfoHolderModel exFih = filesFromExternalDrive[destinationPathForFile];
 
-                            if (pcFih.Modified > exFih.Modified)
+                            if ((pcFih.Modified - exFih.Modified).TotalSeconds > 1)
                             {
                                 filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
 
@@ -99,8 +99,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
                                 }
                                 else
                                 {
-                                    _updateTextBlockUI($"File {destinationPathForFile} was copied to external drive.", Brushes.Black);
-                                    _updateTextBlockUI($"Failed to update old date value of {destinationPathForFile} for the \"Changes.txt\" file.", Brushes.Red);
+                                    _updateTextBlockUI($"File {destinationPathForFile} will be copied to external drive.", Brushes.Black);
+                                    _updateTextBlockUI($"Failed to update value of {destinationPathForFile} for the \"Changes.txt\" file.", Brushes.Red);
                                 }
                             }
                         }
@@ -186,7 +186,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
                 // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                 if (_ct.IsCancellationRequested)

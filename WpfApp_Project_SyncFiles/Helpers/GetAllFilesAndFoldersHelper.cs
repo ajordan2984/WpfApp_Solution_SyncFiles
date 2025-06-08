@@ -39,7 +39,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     {
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
                         string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
-                        FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]).ToUniversalTime());
+                        FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]));
 
                         files.TryAdd(filePathOnExternal, fih);
                     }
@@ -73,7 +73,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             try
             {
-                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
                 _ = Parallel.ForEach(allDirectories, options, directory =>
                 {
@@ -154,7 +154,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 return new ConcurrentDictionary<string, FileInfoHolderModel>();
             }
 
-            ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+            ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
             _ = Parallel.ForEach(allDirectories, options, directory =>
               {
@@ -191,7 +191,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 foreach (string file in files)
                 {
                     FileInfo fi = new(file);
-                    FileInfoHolderModel fih = new(file, fi.LastWriteTimeUtc);
+                    FileInfoHolderModel fih = new(file, fi.LastWriteTime.ToUniversalTime());
                     bagOfAllFiles.Add(fih);
                 }
             }
