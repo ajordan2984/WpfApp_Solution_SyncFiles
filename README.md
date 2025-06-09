@@ -50,3 +50,9 @@ Every bit of encouragement and support makes a difference. Thank you 🙏
 ## 📰 Follow My Writing
 
 For more updates, behind-the-scenes progress, and reflections from my journey, follow me on [Substack](https://andrewjordansjourney.substack.com).
+
+---
+
+## 📜 License
+
+This project is licensed under the GNU General Public License v3.0 License. See `LICENSE` for details.
