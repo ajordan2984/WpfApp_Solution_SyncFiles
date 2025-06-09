@@ -65,7 +65,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                         if (_ct.IsCancellationRequested)
                         {
-                            _updateTextBlockUI($"Cancelling Syncing Files in \"CopyFilesFromOneDriveToAnotherDrive\".", Brushes.Red);
                             return;
                         }
 
@@ -149,9 +148,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
-                List<string> keysToRemove = new();
+                ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
-                foreach (string fileFromExternalDrive in filesFromExternalDrive.Keys)
+                ConcurrentBag<string> keysToRemove = new();
+
+                _ = Parallel.ForEach(filesFromExternalDrive.Keys, options, fileFromExternalDrive =>
                 {
                     // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                     if (_ct.IsCancellationRequested)
@@ -159,17 +160,24 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         return;
                     }
 
-                    string filePathOnPc = fileFromExternalDrive.Replace(_shortPathToFilesOnExternal, _shortPathToFilesOnPc);
-
-                    if (!filesFromPcPath.ContainsKey(filePathOnPc))
+                    try
                     {
-                        string quarantineFilePath = filePathOnPc.Replace(_shortPathToFilesOnPc, _shortPathToFilesOnExternal + "\\QuarantineFolder");
+                        string filePathOnPc = fileFromExternalDrive.Replace(_shortPathToFilesOnExternal, _shortPathToFilesOnPc);
 
-                        Directory.CreateDirectory(Path.GetDirectoryName(quarantineFilePath));
-                        File.Move(fileFromExternalDrive, quarantineFilePath);
-                        keysToRemove.Add(fileFromExternalDrive);
+                        if (!filesFromPcPath.ContainsKey(filePathOnPc))
+                        {
+                            string quarantineFilePath = filePathOnPc.Replace(_shortPathToFilesOnPc, _shortPathToFilesOnExternal + "\\QuarantineFolder");
+
+                            Directory.CreateDirectory(Path.GetDirectoryName(quarantineFilePath));
+                            File.Move(fileFromExternalDrive, quarantineFilePath);
+                            keysToRemove.Add(fileFromExternalDrive);
+                        }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        _updateTextBlockUI(ex.Message, Brushes.Red);
+                    }
+                });
 
                 foreach (string key in keysToRemove)
                 {
