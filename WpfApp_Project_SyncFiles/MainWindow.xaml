@@ -109,7 +109,11 @@
 
             <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="3"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBox Text="{Binding Path=ManualTextBoxExcludedPath}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <TextBox Text="{Binding Path=ManualTextBoxExcludedPath}" 
+                         IsEnabled="{Binding AreTextBoxesEnabled}" 
+                         HorizontalAlignment="Stretch" 
+                         VerticalAlignment="Stretch"
+                         ToolTip="Click the &quot;Add Excluded Folder&quot; button once finished typing."/> 
             </Border>
 
             <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="12"
