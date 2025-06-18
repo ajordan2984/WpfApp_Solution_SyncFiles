@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -251,14 +249,17 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                     UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.", Brushes.Black);
 
-                    GetAllFilesAndFoldersHelper gafafh = new(UpdateTextBlockUI, _cts.Token);
+                    ConcurrentBag<string> pcLogMessages = new();
+                    HelperFunctions hf = new(_cts.Token, pcLogMessages);
+                    hf.SetStartingDirectory(PcPath);
+                    hf.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
 
                     ConcurrentBag<string> ConcurrentListBoxItems = new(ListBoxItems);
 
                     await Task.Run(async () =>
                     {
-                        List<string> allSelectedPcFolders = gafafh.GetAllDirectories(PcPath, ConcurrentListBoxItems);
-                        ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = gafafh.GetAllFiles(allSelectedPcFolders);
+                        List<string> allSelectedPcFolders = hf.GetAllDirectories(PcPath, ConcurrentListBoxItems);
+                        ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = hf.GetAllFiles(allSelectedPcFolders);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                         List<Task> tasks = new();
 
@@ -270,11 +271,13 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                             tasks.Add(
                               Task.Run(() =>
                               {
-                                  SyncFilesFromPcToExternalDriveController _main = new(UpdateTextBlockUI, _cts.Token);
+                                  SyncFilesFromPcToExternalDriveController _main = new(_cts.Token);
+                                  _main.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
                                   _main.SetConcurrentListBoxItems(ConcurrentListBoxItems);
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                                   _main.SetPaths(pcFolderFromTextBox, externalFolder);
                                   bool completed = _main.SyncFiles();
+                                  _main.WriteLogFile();
 
                                   if (completed)
                                   {
@@ -361,7 +364,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             {
                 _ = _dispatcher.BeginInvoke(new Action(() =>
                   {
-                      string text = DateTime.Now.ToString() + " | " + newMessage + Environment.NewLine + Environment.NewLine;
+                      string text = $"{newMessage}{Environment.NewLine}{Environment.NewLine}";
                       Run run = new(text) { Foreground = textColor };
                       Inlines.Add(run);
                   }));

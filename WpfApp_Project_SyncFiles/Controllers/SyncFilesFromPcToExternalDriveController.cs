@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Helpers;
@@ -11,6 +12,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
     public class SyncFilesFromPcToExternalDriveController
     {
         private Action<string, SolidColorBrush> _updateTextBlockUI;
+        private ConcurrentBag<string> _logMessages;
 
         private string _pathToFilesOnPc;
         private string _pathToFilesOnExternal;
@@ -27,11 +29,16 @@ namespace WpfApp_Project_SyncFiles.Controllers
         private HelperFunctions _hf;
     
 
-        public SyncFilesFromPcToExternalDriveController(Action<string, SolidColorBrush> updateTextBlockUI, CancellationToken ct)
+        public SyncFilesFromPcToExternalDriveController(CancellationToken ct)
+        {
+            _logMessages = new ConcurrentBag<string>();
+            _ct = ct;
+            _hf = new HelperFunctions(_ct, _logMessages);
+        }
+        
+        public void SetUpdateTextBlockOnUI(Action<string, SolidColorBrush> updateTextBlockUI)
         {
             _updateTextBlockUI = updateTextBlockUI;
-            _ct = ct;
-            _hf = new HelperFunctions(updateTextBlockUI, _ct);
         }
 
         public void SetConcurrentListBoxItems(ConcurrentBag<string> concurrentListBoxItems)
@@ -54,31 +61,43 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
         public bool SyncFiles()
         {
-            GetAllFilesAndFoldersHelper gafh = new(_updateTextBlockUI, _ct);
+            _hf.SetStartingDirectory(_pathToFilesOnExternal);
+            _hf.SetUpdateTextBlockOnUI(_updateTextBlockUI);
 
-            _updateTextBlockUI($"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"", Brushes.Blue);
-            _allFilesFromFromExternalDrive = gafh.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
+            string userCanceledSyncMsg = $"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".";
+
+            string CheckingForChangesMsg = $"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"";
+            _logMessages.Add(CheckingForChangesMsg);
+            _updateTextBlockUI(CheckingForChangesMsg, Brushes.Blue);
+            //
+            _allFilesFromFromExternalDrive = _hf.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
+                _logMessages.Add(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
             if (_allFilesFromFromExternalDrive.IsEmpty)
             {
-                _allFilesFromFromExternalDrive = gafh.GetAllFiles(gafh.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems));
+                List<string> allDirectories = _hf.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems);
+                _allFilesFromFromExternalDrive = _hf.GetAllFiles(allDirectories);
             }
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
+                _logMessages.Add(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            string CopyingFilesMsg = $"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"";
+            _logMessages.Add(CopyingFilesMsg);
+            _updateTextBlockUI(CopyingFilesMsg, Brushes.Blue);
+            //
             int filesCopied = _hf.CopyFilesFromOneDriveToAnotherDrive(
                 _allSortedFilesFromPcPath,
                 _allFilesFromFromExternalDrive,
@@ -87,49 +106,74 @@ namespace WpfApp_Project_SyncFiles.Controllers
             
             if (filesCopied > 0)
             {
-                _updateTextBlockUI($"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".", Brushes.Black);
+                string DoneCopyingMsg = $"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+                _logMessages.Add(DoneCopyingMsg);
+                _updateTextBlockUI(DoneCopyingMsg, Brushes.Black);
             }
             else
             {
-                _updateTextBlockUI($"No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".", Brushes.Black);
+                string NoFileCopiedMsg = $"No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+                _logMessages.Add(NoFileCopiedMsg);
+                _updateTextBlockUI(NoFileCopiedMsg, Brushes.Black);
             }
             
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
+                _logMessages.Add(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Quarantining any files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            string QuarantiningFilesMsg = $"Quarantining any files on: \"{_pathToFilesOnExternal}\"";
+            _logMessages.Add(QuarantiningFilesMsg);
+            _updateTextBlockUI(QuarantiningFilesMsg, Brushes.Blue);
+            //
             _hf.QuarantineFiles(
             _allSortedFilesFromPcPath,
             _allFilesFromFromExternalDrive,
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
-            _updateTextBlockUI($"Done quarantining files on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            //
+            string DoneQuarantiningMsg = $"Done quarantining files on: \"{_pathToFilesOnExternal}\"";
+            _logMessages.Add(DoneQuarantiningMsg);
+            _updateTextBlockUI(DoneQuarantiningMsg, Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
+                _logMessages.Add(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
+            string RemovingEmptyFoldersMsg = $"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
+            _logMessages.Add(RemovingEmptyFoldersMsg);
+            _updateTextBlockUI(RemovingEmptyFoldersMsg, Brushes.Blue);
+            //
             _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal);
-            _updateTextBlockUI($"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"", Brushes.Blue);
+            //
+            string DoneRemovingEmptyFoldersMsg = $"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
+            _logMessages.Add(DoneRemovingEmptyFoldersMsg);
+            _updateTextBlockUI(DoneRemovingEmptyFoldersMsg, Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".", Brushes.Red);
+                _logMessages.Add(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            _updateTextBlockUI($"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            string WritingChangesFileMsg = $"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
+            _logMessages.Add(WritingChangesFileMsg);
+            _updateTextBlockUI(WritingChangesFileMsg, Brushes.Blue);
+            //
             _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allFilesFromFromExternalDrive);
-            _updateTextBlockUI($"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"", Brushes.Blue);
+            //
+            string DoneWritingChangesFileMsg = $"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
+            _logMessages.Add(DoneWritingChangesFileMsg);
+            _updateTextBlockUI(DoneWritingChangesFileMsg, Brushes.Blue);
 
             return true;
         }
@@ -139,6 +183,25 @@ namespace WpfApp_Project_SyncFiles.Controllers
             try
             {
                 _hf.RemoveUpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt");
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message, Brushes.Red);
+            }
+        }
+
+        public void WriteLogFile()
+        {
+            try
+            {
+                using StreamWriter textFile = new($"{_pathToFilesOnExternal}/log.txt");
+
+                foreach(string line in _logMessages)
+                {
+                    textFile.WriteLine(line);
+                }
+                
+                textFile.Close();
             }
             catch (Exception ex)
             {
