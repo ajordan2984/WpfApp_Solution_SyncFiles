@@ -68,10 +68,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 if (File.Exists(pathToChangesFile))
                 {
-                    
-                    
-                    _updateTextBlockUI($"File \"{pathToChangesFile}\" found. Reading the file contents.", Brushes.Blue);
-                    _logMessages.Add($"{DateTime.Now} | File \"{pathToChangesFile}\" found. Reading the file contents.");
+                    string FileFoundMsg = $"{DateTime.Now} | File \"{pathToChangesFile}\" found. Reading the file contents.";
+                    _updateTextBlockUI(FileFoundMsg, Brushes.Blue);
+                    _logMessages.Add(FileFoundMsg);
 
                     string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
@@ -85,13 +84,15 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         files.TryAdd(filePathOnExternal, fih);
                     }
 
-                    _updateTextBlockUI($"Completed reading the file contents from: \"{ pathToChangesFile}\"", Brushes.Blue);
-                    _logMessages.Add($"{DateTime.Now} | Completed reading the file contents from: \"{ pathToChangesFile}\"");
+                    string CompletedReadingFileMsg = $"{DateTime.Now} | Completed reading the file contents from: \"{ pathToChangesFile}\"";
+                    _updateTextBlockUI(CompletedReadingFileMsg, Brushes.Blue);
+                    _logMessages.Add(CompletedReadingFileMsg);
                 }
                 else
                 {
-                    _updateTextBlockUI($"Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.", Brushes.Black);
-                    _logMessages.Add($"{DateTime.Now} | Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.");
+                    string FileNotFoundMsg = $"{DateTime.Now} | Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.";
+                    _updateTextBlockUI(FileNotFoundMsg, Brushes.Black);
+                    _logMessages.Add(FileNotFoundMsg);
                 }
             }
             catch (Exception ex)
@@ -105,8 +106,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
         public List<string> GetAllDirectories(string startingDirectory, ConcurrentBag<string> ConcurrentListBoxItems)
         {
-            _updateTextBlockUI($@"Getting all folders from: {startingDirectory}", Brushes.Blue);
-            _logMessages.Add($@"{DateTime.Now} | Getting all folders from: {startingDirectory}");
+            string GettingAllFoldersMsg = $"{DateTime.Now} | Getting all folders from: {startingDirectory}";
+            _updateTextBlockUI(GettingAllFoldersMsg, Brushes.Blue);
+            _logMessages.Add(GettingAllFoldersMsg);
 
             ConcurrentBag<string> bagOfDirectories = new();
             List<string> filteredList = new();
@@ -125,7 +127,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                         if (_ct.IsCancellationRequested)
                         {
-                            _updateTextBlockUI($@"Cancelling getting all folders from: {startingDirectory}.", Brushes.Red);
+                            string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all folders from: {startingDirectory}.";
+                            _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
+                            _logMessages.Add(UserCanceledMsg);
                             return;
                         }
 
@@ -143,7 +147,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
                             .ToList();
 
-                _updateTextBlockUI($@"{filteredList.Count} folders found in: {startingDirectory}", Brushes.Blue);
+                string FoldersFoundMsg = $"{DateTime.Now} | {filteredList.Count} folders found in: {startingDirectory}";
+                _updateTextBlockUI(FoldersFoundMsg, Brushes.Blue);
+                _logMessages.Add(FoldersFoundMsg);
             }
             catch (Exception ex)
             {
@@ -151,7 +157,10 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 _logMessages.Add($"{DateTime.Now} | {ex.Message}");
             }
 
-            _updateTextBlockUI($@"{DateTime.Now} | Completed getting all folders from: {startingDirectory}.", Brushes.Blue);
+            string CompletedGettingFoldersMsg = $"{DateTime.Now} | Completed getting all folders from: {startingDirectory}.";
+            _updateTextBlockUI(CompletedGettingFoldersMsg, Brushes.Blue);
+            _logMessages.Add(CompletedGettingFoldersMsg);
+            
             return filteredList;
         }
 
@@ -162,8 +171,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 // CANCEL SYNCING FILES TO EXTERNAL FOLDER
                 if (_ct.IsCancellationRequested)
                 {
-                    _updateTextBlockUI($@"Cancelling getting all folders from: {_startingDirectory}.", Brushes.Red);
-                    return;
+                    string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all folders from: {_startingDirectory}.";
+                    _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
+                    _logMessages.Add(UserCanceledMsg);
                 }
 
                 List<string> subDirectories = new(Directory.GetDirectories(currentDirectory));
@@ -187,8 +197,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
         public ConcurrentDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)
         {
-            _updateTextBlockUI($@"Getting all files from: {_startingDirectory}", Brushes.Blue);
-            _logMessages.Add($@"Getting all files from: {_startingDirectory}");
+            string GettingAllFilesMsg = $"{DateTime.Now} | Getting all files from: {_startingDirectory}";
+            _updateTextBlockUI(GettingAllFilesMsg, Brushes.Blue);
+            _logMessages.Add(GettingAllFilesMsg);
 
             ConcurrentDictionary<string, FileInfoHolderModel> allFiles = new();
             ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new();
@@ -196,7 +207,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _updateTextBlockUI($@"Cancelling getting all files.", Brushes.Red);
+                string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all files.";
+                _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
+                _logMessages.Add(UserCanceledMsg);
                 return new ConcurrentDictionary<string, FileInfoHolderModel>();
             }
 
@@ -215,11 +228,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 }
             }
 
-            _updateTextBlockUI($@"{allFiles.Count} files found in: {_startingDirectory}.", Brushes.Blue);
-            _updateTextBlockUI($@"Completed getting all files from: {_startingDirectory}.", Brushes.Blue);
 
-            _logMessages.Add($@"{allFiles.Count} files found in: {_startingDirectory}.");
-            _logMessages.Add($@"Completed getting all files from: {_startingDirectory}.");
+            string FileCountMsg = $"{DateTime.Now} | {allFiles.Count} files found in: {_startingDirectory}.";
+            string CompletedGettingFilesMsg = $"{DateTime.Now} | Completed getting all files from: {_startingDirectory}.";
+
+            _updateTextBlockUI(FileCountMsg, Brushes.Blue);
+            _updateTextBlockUI(CompletedGettingFilesMsg, Brushes.Blue);
+            _logMessages.Add(FileCountMsg);
+            _logMessages.Add(CompletedGettingFilesMsg);
 
             return allFiles;
         }
@@ -304,8 +320,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
                                 }
                                 else
                                 {
-                                    _updateTextBlockUI($"File {destinationPathForFile} will be copied to external drive.", Brushes.Black);
-                                    _updateTextBlockUI($"Failed to update value of {destinationPathForFile} for the \"Changes.txt\" file.", Brushes.Red);
+                                    string FileCopiedMsg = $"{DateTime.Now} | File {destinationPathForFile} will be copied to external drive.";
+                                    string FailedToUpdateMsg = $"{DateTime.Now} | Failed to update value of {destinationPathForFile} for the \"Changes.txt\" file.";
+
+                                    _updateTextBlockUI(FileCopiedMsg, Brushes.Black);
+                                    _updateTextBlockUI(FailedToUpdateMsg, Brushes.Red);
+                                    _logMessages.Add(FileCopiedMsg);
+                                    _logMessages.Add(FailedToUpdateMsg);
                                 }
                             }
                         }
@@ -330,7 +351,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       try
                       {
                           File.Copy(ftc.Item1, ftc.Item2, true);
-                          _logMessages.Add($"Copying {ftc.Item1} to {ftc.Item2}");
+                          _logMessages.Add($"{DateTime.Now} | Copying File {ftc.Item1} to {ftc.Item2}");
                           Interlocked.Increment(ref filesCopied);
                       }
                       catch (Exception ex)
@@ -475,7 +496,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 if (hasFiles.Length == 0 && hasSubDirectories.Length == 0)
                 {
-                    _logMessages.Add($"Deleteing folder: {directory}");
+                    _logMessages.Add($"{DateTime.Now} | Deleteing Folder: {directory}");
                     Directory.Delete(directory);
                 }
             }

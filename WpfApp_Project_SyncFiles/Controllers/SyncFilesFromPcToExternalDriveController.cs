@@ -64,9 +64,9 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _hf.SetStartingDirectory(_pathToFilesOnExternal);
             _hf.SetUpdateTextBlockOnUI(_updateTextBlockUI);
 
-            string userCanceledSyncMsg = $"Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".";
+            string userCanceledSyncMsg = $"{DateTime.Now} | Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".";
 
-            string CheckingForChangesMsg = $"Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"";
+            string CheckingForChangesMsg = $"{DateTime.Now} | Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"";
             _logMessages.Add(CheckingForChangesMsg);
             _updateTextBlockUI(CheckingForChangesMsg, Brushes.Blue);
             //
@@ -94,7 +94,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            string CopyingFilesMsg = $"Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"";
+            string CopyingFilesMsg = $"{DateTime.Now} | Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"";
             _logMessages.Add(CopyingFilesMsg);
             _updateTextBlockUI(CopyingFilesMsg, Brushes.Blue);
             //
@@ -106,13 +106,13 @@ namespace WpfApp_Project_SyncFiles.Controllers
             
             if (filesCopied > 0)
             {
-                string DoneCopyingMsg = $"Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+                string DoneCopyingMsg = $"{DateTime.Now} | Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
                 _logMessages.Add(DoneCopyingMsg);
                 _updateTextBlockUI(DoneCopyingMsg, Brushes.Black);
             }
             else
             {
-                string NoFileCopiedMsg = $"No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+                string NoFileCopiedMsg = $"{DateTime.Now} | No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
                 _logMessages.Add(NoFileCopiedMsg);
                 _updateTextBlockUI(NoFileCopiedMsg, Brushes.Black);
             }
@@ -125,7 +125,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            string QuarantiningFilesMsg = $"Quarantining any files on: \"{_pathToFilesOnExternal}\"";
+            string QuarantiningFilesMsg = $"{DateTime.Now} | Quarantining any files on: \"{_pathToFilesOnExternal}\"";
             _logMessages.Add(QuarantiningFilesMsg);
             _updateTextBlockUI(QuarantiningFilesMsg, Brushes.Blue);
             //
@@ -135,7 +135,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
             //
-            string DoneQuarantiningMsg = $"Done quarantining files on: \"{_pathToFilesOnExternal}\"";
+            string DoneQuarantiningMsg = $"{DateTime.Now} | Done quarantining files on: \"{_pathToFilesOnExternal}\"";
             _logMessages.Add(DoneQuarantiningMsg);
             _updateTextBlockUI(DoneQuarantiningMsg, Brushes.Blue);
 
@@ -147,13 +147,13 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            string RemovingEmptyFoldersMsg = $"Removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
+            string RemovingEmptyFoldersMsg = $"{DateTime.Now} | Removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
             _logMessages.Add(RemovingEmptyFoldersMsg);
             _updateTextBlockUI(RemovingEmptyFoldersMsg, Brushes.Blue);
             //
             _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal);
             //
-            string DoneRemovingEmptyFoldersMsg = $"Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
+            string DoneRemovingEmptyFoldersMsg = $"{DateTime.Now} | Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
             _logMessages.Add(DoneRemovingEmptyFoldersMsg);
             _updateTextBlockUI(DoneRemovingEmptyFoldersMsg, Brushes.Blue);
 
@@ -165,13 +165,13 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 return false;
             }
 
-            string WritingChangesFileMsg = $"Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
+            string WritingChangesFileMsg = $"{DateTime.Now} | Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
             _logMessages.Add(WritingChangesFileMsg);
             _updateTextBlockUI(WritingChangesFileMsg, Brushes.Blue);
             //
             _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allFilesFromFromExternalDrive);
             //
-            string DoneWritingChangesFileMsg = $"Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
+            string DoneWritingChangesFileMsg = $"{DateTime.Now} | Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
             _logMessages.Add(DoneWritingChangesFileMsg);
             _updateTextBlockUI(DoneWritingChangesFileMsg, Brushes.Blue);
 
@@ -194,7 +194,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
         {
             try
             {
-                using StreamWriter textFile = new($"{_pathToFilesOnExternal}/log.txt");
+                using StreamWriter textFile = new($"{_pathToFilesOnExternal}/log_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
 
                 foreach(string line in _logMessages)
                 {
