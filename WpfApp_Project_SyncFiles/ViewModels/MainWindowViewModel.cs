@@ -249,7 +249,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
                     UpdateTextBlockUI("Now starting on syncing your files to the external folder(s) selected.", Brushes.Black);
 
-                    ConcurrentBag<string> pcLogMessages = new();
+                    ConcurrentQueue<string> pcLogMessages = new();
                     HelperFunctions hf = new(_cts.Token, pcLogMessages);
                     hf.SetStartingDirectory(PcPath);
                     hf.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
@@ -277,7 +277,9 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                                   _main.SetPaths(pcFolderFromTextBox, externalFolder);
                                   bool completed = _main.SyncFiles();
-                                  _main.WriteLogFile();
+                                  UpdateTextBlockUI($"Writing Log file to \"{externalFolder}\".", Brushes.Blue);
+                                  _main.WriteLogFile(pcLogMessages);
+                                  UpdateTextBlockUI($"Completed writing Log file to \"{externalFolder}\".", Brushes.Blue);
 
                                   if (completed)
                                   {

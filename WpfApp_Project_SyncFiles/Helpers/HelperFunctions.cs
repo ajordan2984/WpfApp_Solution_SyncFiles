@@ -15,10 +15,10 @@ namespace WpfApp_Project_SyncFiles.Helpers
     {
         private Action<string, SolidColorBrush> _updateTextBlockUI;
         CancellationToken _ct;
-        private ConcurrentBag<string> _logMessages;
+        private ConcurrentQueue<string> _logMessages;
         private string _startingDirectory;
 
-        public HelperFunctions(CancellationToken ct, ConcurrentBag<string> logMessages)
+        public HelperFunctions(CancellationToken ct, ConcurrentQueue<string> logMessages)
         {
             _ct = ct;
             _logMessages = logMessages;
@@ -54,7 +54,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
 
             return shortenedPath.TrimEnd('\\');
@@ -70,7 +70,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 {
                     string FileFoundMsg = $"{DateTime.Now} | File \"{pathToChangesFile}\" found. Reading the file contents.";
                     _updateTextBlockUI(FileFoundMsg, Brushes.Blue);
-                    _logMessages.Add(FileFoundMsg);
+                    _logMessages.Enqueue(FileFoundMsg);
 
                     string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
@@ -84,21 +84,21 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         files.TryAdd(filePathOnExternal, fih);
                     }
 
-                    string CompletedReadingFileMsg = $"{DateTime.Now} | Completed reading the file contents from: \"{ pathToChangesFile}\"";
+                    string CompletedReadingFileMsg = $"{DateTime.Now} | Completed reading the file contents from: \"{ pathToChangesFile}\".";
                     _updateTextBlockUI(CompletedReadingFileMsg, Brushes.Blue);
-                    _logMessages.Add(CompletedReadingFileMsg);
+                    _logMessages.Enqueue(CompletedReadingFileMsg);
                 }
                 else
                 {
                     string FileNotFoundMsg = $"{DateTime.Now} | Cannot find: \"{pathToChangesFile}\" | Moving to collect directories and files.";
                     _updateTextBlockUI(FileNotFoundMsg, Brushes.Black);
-                    _logMessages.Add(FileNotFoundMsg);
+                    _logMessages.Enqueue(FileNotFoundMsg);
                 }
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
 
             return files;
@@ -106,9 +106,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
         public List<string> GetAllDirectories(string startingDirectory, ConcurrentBag<string> ConcurrentListBoxItems)
         {
-            string GettingAllFoldersMsg = $"{DateTime.Now} | Getting all folders from: {startingDirectory}";
+            string GettingAllFoldersMsg = $"{DateTime.Now} | Getting all folders from: {startingDirectory}.";
             _updateTextBlockUI(GettingAllFoldersMsg, Brushes.Blue);
-            _logMessages.Add(GettingAllFoldersMsg);
+            _logMessages.Enqueue(GettingAllFoldersMsg);
 
             ConcurrentBag<string> bagOfDirectories = new();
             List<string> filteredList = new();
@@ -129,7 +129,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         {
                             string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all folders from: {startingDirectory}.";
                             _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
-                            _logMessages.Add(UserCanceledMsg);
+                            _logMessages.Enqueue(UserCanceledMsg);
                             return;
                         }
 
@@ -138,7 +138,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     catch (Exception ex)
                     {
                         _updateTextBlockUI(ex.Message, Brushes.Red);
-                        _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                        _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                     }
                 });
 
@@ -147,19 +147,19 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
                             .ToList();
 
-                string FoldersFoundMsg = $"{DateTime.Now} | {filteredList.Count} folders found in: {startingDirectory}";
+                string FoldersFoundMsg = $"{DateTime.Now} | {filteredList.Count} folders found in: {startingDirectory}.";
                 _updateTextBlockUI(FoldersFoundMsg, Brushes.Blue);
-                _logMessages.Add(FoldersFoundMsg);
+                _logMessages.Enqueue(FoldersFoundMsg);
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
 
             string CompletedGettingFoldersMsg = $"{DateTime.Now} | Completed getting all folders from: {startingDirectory}.";
             _updateTextBlockUI(CompletedGettingFoldersMsg, Brushes.Blue);
-            _logMessages.Add(CompletedGettingFoldersMsg);
+            _logMessages.Enqueue(CompletedGettingFoldersMsg);
             
             return filteredList;
         }
@@ -173,7 +173,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 {
                     string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all folders from: {_startingDirectory}.";
                     _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
-                    _logMessages.Add(UserCanceledMsg);
+                    _logMessages.Enqueue(UserCanceledMsg);
                 }
 
                 List<string> subDirectories = new(Directory.GetDirectories(currentDirectory));
@@ -191,15 +191,15 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
 
         public ConcurrentDictionary<string, FileInfoHolderModel> GetAllFiles(List<string> allDirectories)
         {
-            string GettingAllFilesMsg = $"{DateTime.Now} | Getting all files from: {_startingDirectory}";
+            string GettingAllFilesMsg = $"{DateTime.Now} | Getting all files from: {_startingDirectory}.";
             _updateTextBlockUI(GettingAllFilesMsg, Brushes.Blue);
-            _logMessages.Add(GettingAllFilesMsg);
+            _logMessages.Enqueue(GettingAllFilesMsg);
 
             ConcurrentDictionary<string, FileInfoHolderModel> allFiles = new();
             ConcurrentBag<FileInfoHolderModel> bagOfAllFiles = new();
@@ -209,7 +209,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 string UserCanceledMsg = $"{DateTime.Now} | Cancelling getting all files.";
                 _updateTextBlockUI(UserCanceledMsg, Brushes.Red);
-                _logMessages.Add(UserCanceledMsg);
+                _logMessages.Enqueue(UserCanceledMsg);
                 return new ConcurrentDictionary<string, FileInfoHolderModel>();
             }
 
@@ -234,8 +234,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             _updateTextBlockUI(FileCountMsg, Brushes.Blue);
             _updateTextBlockUI(CompletedGettingFilesMsg, Brushes.Blue);
-            _logMessages.Add(FileCountMsg);
-            _logMessages.Add(CompletedGettingFilesMsg);
+            _logMessages.Enqueue(FileCountMsg);
+            _logMessages.Enqueue(CompletedGettingFilesMsg);
 
             return allFiles;
         }
@@ -264,17 +264,17 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
 
-        public int CopyFilesFromOneDriveToAnotherDrive(
+        public long CopyFilesFromOneDriveToAnotherDrive(
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromPcPath,
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
             string shortPathToFilesOnPc,
             string shortPathToFilesOnExternal)
         {
-            int filesCopied = 0;
+            long filesCopied = 0;
             try
             {
                 ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
@@ -325,8 +325,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                                     _updateTextBlockUI(FileCopiedMsg, Brushes.Black);
                                     _updateTextBlockUI(FailedToUpdateMsg, Brushes.Red);
-                                    _logMessages.Add(FileCopiedMsg);
-                                    _logMessages.Add(FailedToUpdateMsg);
+                                    _logMessages.Enqueue(FileCopiedMsg);
+                                    _logMessages.Enqueue(FailedToUpdateMsg);
                                 }
                             }
                         }
@@ -334,7 +334,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     catch (Exception ex)
                     {
                         _updateTextBlockUI(ex.Message, Brushes.Red);
-                        _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                        _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                     }
                 });
 
@@ -351,20 +351,20 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       try
                       {
                           File.Copy(ftc.Item1, ftc.Item2, true);
-                          _logMessages.Add($"{DateTime.Now} | Copying File {ftc.Item1} to {ftc.Item2}");
+                          _logMessages.Enqueue($"{DateTime.Now} | Copying File From: {ftc.Item1}{Environment.NewLine}To: {ftc.Item2}.");
                           Interlocked.Increment(ref filesCopied);
                       }
                       catch (Exception ex)
                       {
                           _updateTextBlockUI(ex.Message, Brushes.Red);
-                          _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                          _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                       }
                   });
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
 
             return filesCopied;
@@ -379,6 +379,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             try
             {
+                long numberOfQuarantinedFiles = 0;
                 ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
                 ConcurrentBag<string> keysToRemove = new();
@@ -400,16 +401,22 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             string quarantineFilePath = filePathOnPc.Replace(_shortPathToFilesOnPc, _shortPathToFilesOnExternal + "\\QuarantineFolder");
 
                             Directory.CreateDirectory(Path.GetDirectoryName(quarantineFilePath));
+                            //
+                            _logMessages.Enqueue($"{DateTime.Now} | Moving File From: {fileFromExternalDrive} {Environment.NewLine}To: {quarantineFilePath}.");
+                            //
                             File.Move(fileFromExternalDrive, quarantineFilePath);
+                            Interlocked.Increment(ref numberOfQuarantinedFiles);
                             keysToRemove.Add(fileFromExternalDrive);
                         }
                     }
                     catch (Exception ex)
                     {
                         _updateTextBlockUI(ex.Message, Brushes.Red);
-                        _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                        _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                     }
                 });
+
+                _logMessages.Enqueue($"{DateTime.Now} | {numberOfQuarantinedFiles} files quarantined.");
 
                 foreach (string key in keysToRemove)
                 {
@@ -419,7 +426,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
 
@@ -452,14 +459,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       catch (Exception ex)
                       {
                           _updateTextBlockUI(ex.Message, Brushes.Red);
-                          _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                          _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                       }
                   });
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
 
@@ -486,7 +493,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                         catch (Exception ex)
                         {
                             _updateTextBlockUI(ex.Message, Brushes.Red);
-                            _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                            _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
                         }
                     }
                 }
@@ -496,14 +503,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                 if (hasFiles.Length == 0 && hasSubDirectories.Length == 0)
                 {
-                    _logMessages.Add($"{DateTime.Now} | Deleteing Folder: {directory}");
+                    _logMessages.Enqueue($"{DateTime.Now} | Deleteing Folder: {directory}.");
                     Directory.Delete(directory);
                 }
             }
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
 
         }
@@ -523,7 +530,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
 
@@ -539,7 +546,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch (Exception ex)
             {
                 _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Add($"{DateTime.Now} | {ex.Message}");
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
     }

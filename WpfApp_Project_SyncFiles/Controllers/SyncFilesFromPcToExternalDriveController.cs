@@ -12,7 +12,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
     public class SyncFilesFromPcToExternalDriveController
     {
         private Action<string, SolidColorBrush> _updateTextBlockUI;
-        private ConcurrentBag<string> _logMessages;
+        private ConcurrentQueue<string> _logMessages;
 
         private string _pathToFilesOnPc;
         private string _pathToFilesOnExternal;
@@ -31,7 +31,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
         public SyncFilesFromPcToExternalDriveController(CancellationToken ct)
         {
-            _logMessages = new ConcurrentBag<string>();
+            _logMessages = new ConcurrentQueue<string>();
             _ct = ct;
             _hf = new HelperFunctions(_ct, _logMessages);
         }
@@ -66,8 +66,8 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
             string userCanceledSyncMsg = $"{DateTime.Now} | Cancelling Syncing Files to \"{_pathToFilesOnExternal}\".";
 
-            string CheckingForChangesMsg = $"{DateTime.Now} | Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\"";
-            _logMessages.Add(CheckingForChangesMsg);
+            string CheckingForChangesMsg = $"{DateTime.Now} | Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\".";
+            _logMessages.Enqueue(CheckingForChangesMsg);
             _updateTextBlockUI(CheckingForChangesMsg, Brushes.Blue);
             //
             _allFilesFromFromExternalDrive = _hf.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
@@ -75,7 +75,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _logMessages.Add(userCanceledSyncMsg);
+                _logMessages.Enqueue(userCanceledSyncMsg);
                 _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
@@ -89,16 +89,16 @@ namespace WpfApp_Project_SyncFiles.Controllers
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _logMessages.Add(userCanceledSyncMsg);
+                _logMessages.Enqueue(userCanceledSyncMsg);
                 _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            string CopyingFilesMsg = $"{DateTime.Now} | Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\"";
-            _logMessages.Add(CopyingFilesMsg);
+            string CopyingFilesMsg = $"{DateTime.Now} | Copying files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(CopyingFilesMsg);
             _updateTextBlockUI(CopyingFilesMsg, Brushes.Blue);
             //
-            int filesCopied = _hf.CopyFilesFromOneDriveToAnotherDrive(
+            long filesCopied = _hf.CopyFilesFromOneDriveToAnotherDrive(
                 _allSortedFilesFromPcPath,
                 _allFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
@@ -107,26 +107,26 @@ namespace WpfApp_Project_SyncFiles.Controllers
             if (filesCopied > 0)
             {
                 string DoneCopyingMsg = $"{DateTime.Now} | Done copying {filesCopied} files from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
-                _logMessages.Add(DoneCopyingMsg);
+                _logMessages.Enqueue(DoneCopyingMsg);
                 _updateTextBlockUI(DoneCopyingMsg, Brushes.Black);
             }
             else
             {
-                string NoFileCopiedMsg = $"{DateTime.Now} | No files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
-                _logMessages.Add(NoFileCopiedMsg);
+                string NoFileCopiedMsg = $"{DateTime.Now} | 0 files copied from: \"{_pathToFilesOnPc}\" to \"{_pathToFilesOnExternal}\".";
+                _logMessages.Enqueue(NoFileCopiedMsg);
                 _updateTextBlockUI(NoFileCopiedMsg, Brushes.Black);
             }
             
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _logMessages.Add(userCanceledSyncMsg);
+                _logMessages.Enqueue(userCanceledSyncMsg);
                 _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            string QuarantiningFilesMsg = $"{DateTime.Now} | Quarantining any files on: \"{_pathToFilesOnExternal}\"";
-            _logMessages.Add(QuarantiningFilesMsg);
+            string QuarantiningFilesMsg = $"{DateTime.Now} | Quarantining any files on: \"{_pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(QuarantiningFilesMsg);
             _updateTextBlockUI(QuarantiningFilesMsg, Brushes.Blue);
             //
             _hf.QuarantineFiles(
@@ -135,44 +135,44 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _shortPathToFilesOnPc,
             _shortPathToFilesOnExternal);
             //
-            string DoneQuarantiningMsg = $"{DateTime.Now} | Done quarantining files on: \"{_pathToFilesOnExternal}\"";
-            _logMessages.Add(DoneQuarantiningMsg);
+            string DoneQuarantiningMsg = $"{DateTime.Now} | Done quarantining files on: \"{_pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(DoneQuarantiningMsg);
             _updateTextBlockUI(DoneQuarantiningMsg, Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _logMessages.Add(userCanceledSyncMsg);
+                _logMessages.Enqueue(userCanceledSyncMsg);
                 _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            string RemovingEmptyFoldersMsg = $"{DateTime.Now} | Removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
-            _logMessages.Add(RemovingEmptyFoldersMsg);
+            string RemovingEmptyFoldersMsg = $"{DateTime.Now} | Removing any empty folders on: \"{ _pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(RemovingEmptyFoldersMsg);
             _updateTextBlockUI(RemovingEmptyFoldersMsg, Brushes.Blue);
             //
             _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal);
             //
-            string DoneRemovingEmptyFoldersMsg = $"{DateTime.Now} | Done removing any empty folders on: \"{ _pathToFilesOnExternal}\"";
-            _logMessages.Add(DoneRemovingEmptyFoldersMsg);
+            string DoneRemovingEmptyFoldersMsg = $"{DateTime.Now} | Done removing any empty folders on: \"{ _pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(DoneRemovingEmptyFoldersMsg);
             _updateTextBlockUI(DoneRemovingEmptyFoldersMsg, Brushes.Blue);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
             {
-                _logMessages.Add(userCanceledSyncMsg);
+                _logMessages.Enqueue(userCanceledSyncMsg);
                 _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
                 return false;
             }
 
-            string WritingChangesFileMsg = $"{DateTime.Now} | Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
-            _logMessages.Add(WritingChangesFileMsg);
+            string WritingChangesFileMsg = $"{DateTime.Now} | Writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(WritingChangesFileMsg);
             _updateTextBlockUI(WritingChangesFileMsg, Brushes.Blue);
             //
             _hf.UpdateChangesFile($"{_pathToFilesOnExternal}\\Changes.txt", _allFilesFromFromExternalDrive);
             //
-            string DoneWritingChangesFileMsg = $"{DateTime.Now} | Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\"";
-            _logMessages.Add(DoneWritingChangesFileMsg);
+            string DoneWritingChangesFileMsg = $"{DateTime.Now} | Done writing \"Changes.txt\" on: \"{_pathToFilesOnExternal}\".";
+            _logMessages.Enqueue(DoneWritingChangesFileMsg);
             _updateTextBlockUI(DoneWritingChangesFileMsg, Brushes.Blue);
 
             return true;
@@ -190,15 +190,20 @@ namespace WpfApp_Project_SyncFiles.Controllers
             }
         }
 
-        public void WriteLogFile()
+        public void WriteLogFile(ConcurrentQueue<string> pcLogMessages)
         {
             try
             {
                 using StreamWriter textFile = new($"{_pathToFilesOnExternal}/log_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
 
-                foreach(string line in _logMessages)
+                foreach (string line in pcLogMessages)
                 {
-                    textFile.WriteLine(line);
+                    textFile.WriteLine(line + Environment.NewLine);
+                }
+
+                foreach (string line in _logMessages)
+                {
+                    textFile.WriteLine(line + Environment.NewLine);
                 }
                 
                 textFile.Close();
