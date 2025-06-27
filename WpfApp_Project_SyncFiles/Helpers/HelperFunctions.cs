@@ -278,7 +278,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             try
             {
                 ParallelOptions options = new() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
-                ConcurrentBag<Tuple<string, string>> filesToCopy = new();
+                ConcurrentBag<IsNewFileModel> filesToCopy = new();
 
                 _ = Parallel.ForEach(filesFromPcPath.Keys, options, file =>
                 {
@@ -294,7 +294,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                         if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
                         {
-                            filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
+                            filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, true));
 
                             // Update that the file has been added so it reflects in the "Changes.txt" file
                             FileInfo fi = new(file);
@@ -308,7 +308,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                             if ((pcFih.Modified - exFih.Modified).TotalSeconds > 1)
                             {
-                                filesToCopy.Add(new Tuple<string, string>(file, destinationPathForFile));
+                                filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, false));
 
                                 // Update that the file has changed so it reflects in the "Changes.txt" file
                                 FileInfo fi = new(file);
@@ -346,12 +346,20 @@ namespace WpfApp_Project_SyncFiles.Helpers
                           return;
                       }
 
-                      Directory.CreateDirectory(Path.GetDirectoryName(ftc.Item2));
+                      Directory.CreateDirectory(Path.GetDirectoryName(ftc.FileDestination));
 
                       try
                       {
-                          File.Copy(ftc.Item1, ftc.Item2, true);
-                          _logMessages.Enqueue($"{DateTime.Now} | Copying File From: {ftc.Item1}{Environment.NewLine}To: {ftc.Item2}.");
+                          File.Copy(ftc.FileSource, ftc.FileDestination, true);
+                          
+                          if (ftc.NewFile)
+                          {
+                              _logMessages.Enqueue($"{DateTime.Now} | Copying New File From: {ftc.FileSource}{Environment.NewLine}To: {ftc.FileDestination}.");
+                          }
+                          else
+                          {
+                              _logMessages.Enqueue($"{DateTime.Now} | Updating Previous File From: {ftc.FileSource}{Environment.NewLine}To: {ftc.FileDestination}.");
+                          }
                           Interlocked.Increment(ref filesCopied);
                       }
                       catch (Exception ex)
