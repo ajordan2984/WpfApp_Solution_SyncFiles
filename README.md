@@ -31,7 +31,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 
 ## 🔓 Version
 
-**v1.0.0**  
+**v2.0.0**  
 Open Source and free to use.
 
 ---
