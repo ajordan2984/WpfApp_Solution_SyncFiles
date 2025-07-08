@@ -2,7 +2,7 @@
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](#)
 [![Project](https://img.shields.io/badge/project-maintained-blue)](#)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](#)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue)](#)
 
 ---
 
