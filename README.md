@@ -10,6 +10,8 @@
 
 This utility makes it simple to back up files from a selected PC folder to one or more external drives **without creating duplicate files**. It only copies over **new** or **updated** files that have been added to the PC folder. This keeps your external backups clean and up to date.
 
+![SyncUserFiles](https://github.com/user-attachments/assets/dc64fb20-958b-4082-a208-e691ffdc00a4)
+
 ---
 
 ## ⚙️ How It Works
