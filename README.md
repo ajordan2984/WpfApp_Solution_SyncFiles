@@ -15,7 +15,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 ## ⚙️ How It Works
 
 > [!NOTE]
-> The selected PC folder must match the external folder name or it will not run. For example, if you select or type **`C:\Users\johndoe\Pictures`** on your PC, the external folder must end with **`Pictures`**.
+> The selected or typed PC folder must match the external folder name or it will not run. For example, if you select or type **`C:\Users\johndoe\Pictures`** on your PC, the external folder must end with **`Pictures`**.
 
 - The program scans a selected folder on your PC.
 - It then **compares** the contents of that PC folder to an external backup folder.
@@ -30,7 +30,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 - Finally, a log file is created on the external drive detailing any changes made.
 
 > [!TIP]
-> If you want to skip any subfolder inside the selected folder on your PC and external drives, simply type the name of the subfolder in the field under **`(Optional) Please add or select the folders from inside the selected PC folder to excluded from backup`** and then click the button **`Add Excluded Folder`**.
+> If you want to skip any subfolder inside the selected folder on your PC and external drives, simply select or type the name of the subfolder in the field under **`(Optional) Please add or select the folders from inside the selected PC folder to excluded from backup`** and then click the button **`Add Excluded Folder`**.
 
 > [!NOTE]
 > When skipping a subfolder, any subfolder with either that name or part of that name will be skipped. For example, if you want to skip the **`MyExample`** subfolder, **`MyExample1`**, **`MyExample2`**, **`MyExample3`** will all be skipped as they match part of the name **`MyExample`**. If you would like to change this, you can in the **`GetAllDirectories`**  function.
