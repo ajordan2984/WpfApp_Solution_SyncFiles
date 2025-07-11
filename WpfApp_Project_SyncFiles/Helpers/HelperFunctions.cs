@@ -438,7 +438,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        public void ParallelRecursiveRemoveDirectories(string directory)
+        public void ParallelRecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentListBoxItems)
         {
             try
             {
@@ -450,7 +450,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     return;
                 }
 
-                List<string> allDirectories = new(Directory.GetDirectories(directory));
+                List<string> allDirectories = new List<string>(Directory.GetDirectories(directory))
+                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
+                .ToList();
 
                 _ = Parallel.ForEach(allDirectories, options, subDirectory =>
                   {
@@ -462,7 +464,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                       try
                       {
-                          RecursiveRemoveDirectories(subDirectory);
+                          RecursiveRemoveDirectories(subDirectory, ConcurrentListBoxItems);
                       }
                       catch (Exception ex)
                       {
@@ -478,11 +480,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        private void RecursiveRemoveDirectories(string directory)
+        private void RecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentListBoxItems)
         {
             try
             {
-                List<string> allDirectories = new(Directory.GetDirectories(directory));
+                List<string> allDirectories = new List<string>(Directory.GetDirectories(directory))
+                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
+                .ToList();
 
                 if (allDirectories.Count > 0)
                 {
@@ -496,7 +500,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                         try
                         {
-                            RecursiveRemoveDirectories(subDirectory);
+                            RecursiveRemoveDirectories(subDirectory, ConcurrentListBoxItems);
                         }
                         catch (Exception ex)
                         {
@@ -520,7 +524,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 _updateTextBlockUI(ex.Message, Brushes.Red);
                 _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
-
         }
 
         public void UpdateChangesFile(string pathToChangesFile, ConcurrentDictionary<string, FileInfoHolderModel> allFilesFromFromExternalDrive)

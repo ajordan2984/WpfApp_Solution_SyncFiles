@@ -151,7 +151,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _logMessages.Enqueue(RemovingEmptyFoldersMsg);
             _updateTextBlockUI(RemovingEmptyFoldersMsg, Brushes.Blue);
             //
-            _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal);
+            _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems);
             //
             string DoneRemovingEmptyFoldersMsg = $"{DateTime.Now} | Done removing any empty folders on: \"{ _pathToFilesOnExternal}\".";
             _logMessages.Enqueue(DoneRemovingEmptyFoldersMsg);
