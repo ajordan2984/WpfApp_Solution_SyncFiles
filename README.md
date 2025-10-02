@@ -42,8 +42,9 @@ This utility makes it simple to back up files from a selected PC folder to one o
 ---
 
 ## 🔓 Version
+## Compatibility
 
-**v2.1.0**  
+**v2.1.0** - Windows 7 (64-bit recommended)
 Open Source and free to use.
 
 ---
