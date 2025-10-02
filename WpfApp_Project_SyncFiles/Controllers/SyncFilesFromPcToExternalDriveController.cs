@@ -20,7 +20,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
         private string _shortPathToFilesOnPc;
         private string _shortPathToFilesOnExternal;
 
-        ConcurrentBag<string> _ConcurrentListBoxItems;
+        ConcurrentBag<string> _ConcurrentSkipFoldersBag;
 
         private ConcurrentDictionary<string, FileInfoHolderModel> _allSortedFilesFromPcPath;
         private ConcurrentDictionary<string, FileInfoHolderModel> _allFilesFromFromExternalDrive;
@@ -41,9 +41,9 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _updateTextBlockUI = updateTextBlockUI;
         }
 
-        public void SetConcurrentListBoxItems(ConcurrentBag<string> concurrentListBoxItems)
+        public void SetConcurrentSkipFoldersBag(ConcurrentBag<string> concurrentSkipFoldersListBoxItems)
         {
-            _ConcurrentListBoxItems = concurrentListBoxItems;
+            _ConcurrentSkipFoldersBag = concurrentSkipFoldersListBoxItems;
         }
 
         public void SetAllSortedFilesFromPcPath(ConcurrentDictionary<string, FileInfoHolderModel> files)
@@ -69,8 +69,8 @@ namespace WpfApp_Project_SyncFiles.Controllers
             string CheckingForChangesMsg = $"{DateTime.Now} | Checking for the file: \"{_pathToFilesOnExternal}\\Changes.txt\".";
             _logMessages.Enqueue(CheckingForChangesMsg);
             _updateTextBlockUI(CheckingForChangesMsg, Brushes.Blue);
-            //
-            _allFilesFromFromExternalDrive = _hf.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt");
+          
+            _allFilesFromFromExternalDrive = _hf.CheckForChanges($"{_pathToFilesOnExternal}\\Changes.txt", _ConcurrentSkipFoldersBag);
 
             // CANCEL SYNCING FILES TO EXTERNAL FOLDER
             if (_ct.IsCancellationRequested)
@@ -82,7 +82,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
 
             if (_allFilesFromFromExternalDrive.IsEmpty)
             {
-                List<string> allDirectories = _hf.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems);
+                List<string> allDirectories = _hf.GetAllDirectories(_pathToFilesOnExternal, _ConcurrentSkipFoldersBag);
                 _allFilesFromFromExternalDrive = _hf.GetAllFiles(allDirectories);
             }
 
@@ -151,7 +151,7 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _logMessages.Enqueue(RemovingEmptyFoldersMsg);
             _updateTextBlockUI(RemovingEmptyFoldersMsg, Brushes.Blue);
             //
-            _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal, _ConcurrentListBoxItems);
+            _hf.ParallelRecursiveRemoveDirectories(_pathToFilesOnExternal, _ConcurrentSkipFoldersBag);
             //
             string DoneRemovingEmptyFoldersMsg = $"{DateTime.Now} | Done removing any empty folders on: \"{ _pathToFilesOnExternal}\".";
             _logMessages.Enqueue(DoneRemovingEmptyFoldersMsg);

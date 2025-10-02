@@ -40,14 +40,14 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel(Dispatcher dispatcher)
         {
-            ListBoxItems = new ObservableCollection<string>();
+            SkipFoldersListBoxItems = new ObservableCollection<string>();
             Inlines = new ObservableCollection<Inline>();
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
-            ManualButtonExcludedPath = new RelayCommand(execute => _iec.AddOrRemoveListBoxItem(true, ListBoxItems, ManualTextBoxExcludedPath));
+            ManualButtonExcludedPath = new RelayCommand(execute => AddOrRemoveListBoxItem(true));
             AddExcludedPcPath = new RelayCommand(execute => Browse("ListBoxItemAdd"));
-            RemoveExcludedPcPath = new RelayCommand(execute => _iec.AddOrRemoveListBoxItem(false, ListBoxItems, SelectedListBoxItem));
+            RemoveExcludedPcPath = new RelayCommand(execute => AddOrRemoveListBoxItem(false));
             UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("ExternalFolder1Path"));
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("ExternalFolder2Path"));
             UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("ExternalFolder3Path"));
@@ -73,7 +73,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 OnPropertyChanged(nameof(SelectedListBoxItem));
             }
         }
-        public ObservableCollection<string> ListBoxItems { get; set; }
+        public ObservableCollection<string> SkipFoldersListBoxItems { get; set; }
         public ObservableCollection<Inline> Inlines { get; }
         public bool AreTextBoxesEnabled
         {
@@ -192,6 +192,19 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void AddOrRemoveListBoxItem(bool add)
+        {
+            if (add)
+            {
+                _iec.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, ManualTextBoxExcludedPath, UpdateTextBlockUI);
+                ManualTextBoxExcludedPath = string.Empty;
+            }
+            else
+            {
+                _iec.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedListBoxItem, UpdateTextBlockUI);
+            }
+        }
+
         public void Browse(string selectedTextBox)
         {
             FileDialogView childView = new();
@@ -221,7 +234,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                         ExternalFolder4Path = path;
                         break;
                     case "ListBoxItemAdd":
-                        _iec.AddOrRemoveListBoxItem(true, ListBoxItems, path);
+                        _iec.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, path, UpdateTextBlockUI);
                         break;
                     default:
                         MessageBox.Show("An error occured in the Browse function.", "Alert");
@@ -254,11 +267,18 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     hf.SetStartingDirectory(PcPath);
                     hf.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
 
-                    ConcurrentBag<string> ConcurrentListBoxItems = new(ListBoxItems);
+                    string ShortenedPcPath = hf.ShortenedPath(PcPath);
+
+                    ConcurrentBag<string> ConcurrentSkipFoldersListBoxItems = new();
+
+                    foreach (string folder in SkipFoldersListBoxItems)
+                    {
+                        ConcurrentSkipFoldersListBoxItems.Add(folder.Remove(0,ShortenedPcPath.Length));
+                    }
 
                     await Task.Run(async () =>
                     {
-                        List<string> allSelectedPcFolders = hf.GetAllDirectories(PcPath, ConcurrentListBoxItems);
+                        List<string> allSelectedPcFolders = hf.GetAllDirectories(PcPath, ConcurrentSkipFoldersListBoxItems);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = hf.GetAllFiles(allSelectedPcFolders);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                         List<Task> tasks = new();
@@ -273,7 +293,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                               {
                                   SyncFilesFromPcToExternalDriveController _main = new(_cts.Token);
                                   _main.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
-                                  _main.SetConcurrentListBoxItems(ConcurrentListBoxItems);
+                                  _main.SetConcurrentSkipFoldersBag(ConcurrentSkipFoldersListBoxItems);
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                                   _main.SetPaths(pcFolderFromTextBox, externalFolder);
                                   bool completed = _main.SyncFiles();

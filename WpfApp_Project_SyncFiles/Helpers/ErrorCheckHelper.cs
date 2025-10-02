@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Media;
 using WpfApp_Project_SyncFiles.Interfaces;
 using WpfApp_Project_SyncFiles.Models;
 
@@ -12,15 +14,21 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
         }
 
-        public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> ListBoxItems, string folder)
+        public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> SkipFoldersListBoxItems, string folder, Action<string, SolidColorBrush> error)
         {
+            if (!Directory.Exists(folder))
+            {
+                error?.Invoke($"Error: The folder \"{folder}\" does not exist. Please try again.", Brushes.Red);
+                return;
+            }
+            
             if (!string.IsNullOrEmpty(folder))
             {
-                ListBoxItems.Remove(folder);
+                SkipFoldersListBoxItems.Remove(folder);
 
                 if (add)
                 {
-                    ListBoxItems.Add(folder);
+                    SkipFoldersListBoxItems.Add(folder);
                 }
             }
         }

@@ -60,7 +60,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return shortenedPath.TrimEnd('\\');
         }
 
-        public ConcurrentDictionary<string, FileInfoHolderModel> CheckForChanges(string pathToChangesFile)
+        public ConcurrentDictionary<string, FileInfoHolderModel> CheckForChanges(string pathToChangesFile, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             ConcurrentDictionary<string, FileInfoHolderModel> files = new();
 
@@ -79,9 +79,13 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     {
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
                         string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
-                        FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]));
 
-                        files.TryAdd(filePathOnExternal, fih);
+                        if (!ConcurrentSkipFoldersBag.Any(substring => filePathOnExternal.Contains(substring)))
+                        {
+                            FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]));
+
+                            files.TryAdd(filePathOnExternal, fih);
+                        }
                     }
 
                     string CompletedReadingFileMsg = $"{DateTime.Now} | Completed reading the file contents from: \"{ pathToChangesFile}\".";
@@ -104,7 +108,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return files;
         }
 
-        public List<string> GetAllDirectories(string startingDirectory, ConcurrentBag<string> ConcurrentListBoxItems)
+        public List<string> GetAllDirectories(string startingDirectory, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             string GettingAllFoldersMsg = $"{DateTime.Now} | Getting all folders from: {startingDirectory}.";
             _updateTextBlockUI(GettingAllFoldersMsg, Brushes.Blue);
@@ -112,9 +116,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             ConcurrentBag<string> bagOfDirectories = new();
             List<string> filteredList = new();
-            List<string> allDirectories = new List<string>(Directory.GetDirectories(startingDirectory))
-                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
-                .ToList();
+            List<string> allDirectories = new List<string>(Directory.GetDirectories(startingDirectory));
 
             try
             {
@@ -144,7 +146,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
 
                 filteredList = bagOfDirectories
-                            .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
+                            .Where(item => !ConcurrentSkipFoldersBag.Any(substring => item.Contains(substring)))
                             .ToList();
 
                 string FoldersFoundMsg = $"{DateTime.Now} | {filteredList.Count} folders found in: {startingDirectory}.";
@@ -438,7 +440,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        public void ParallelRecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentListBoxItems)
+        public void ParallelRecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             try
             {
@@ -450,9 +452,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     return;
                 }
 
-                List<string> allDirectories = new List<string>(Directory.GetDirectories(directory))
-                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
-                .ToList();
+                List<string> allDirectories = new List<string>(Directory.GetDirectories(directory));
 
                 _ = Parallel.ForEach(allDirectories, options, subDirectory =>
                   {
@@ -464,7 +464,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                       try
                       {
-                          RecursiveRemoveDirectories(subDirectory, ConcurrentListBoxItems);
+                          RecursiveRemoveDirectories(subDirectory, ConcurrentSkipFoldersBag);
                       }
                       catch (Exception ex)
                       {
@@ -480,14 +480,14 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
-        private void RecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentListBoxItems)
+        private void RecursiveRemoveDirectories(string directory, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             try
             {
                 List<string> allDirectories = new List<string>(Directory.GetDirectories(directory))
-                .Where(item => !ConcurrentListBoxItems.Any(substring => item.Contains(substring)))
+                .Where(item => !ConcurrentSkipFoldersBag.Any(substring => item.Contains(substring)))
                 .ToList();
-
+                
                 if (allDirectories.Count > 0)
                 {
                     foreach (string subDirectory in allDirectories)
@@ -500,7 +500,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                         try
                         {
-                            RecursiveRemoveDirectories(subDirectory, ConcurrentListBoxItems);
+                            RecursiveRemoveDirectories(subDirectory, ConcurrentSkipFoldersBag);
                         }
                         catch (Exception ex)
                         {
