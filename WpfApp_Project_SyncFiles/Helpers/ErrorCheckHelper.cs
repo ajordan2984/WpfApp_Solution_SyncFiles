@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -14,6 +15,21 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
         }
 
+        public ConcurrentBag<string> CreateNewSkipFoldersBag(string ShortenedPcPath, ObservableCollection<string> SkipFoldersListBoxItems)
+        {
+            ConcurrentBag<string> bag = new();
+
+            foreach (string folder in SkipFoldersListBoxItems)
+            {
+                if (folder.Contains(ShortenedPcPath))
+                {
+                    bag.Add(folder.Replace(ShortenedPcPath, ""));
+                }
+            }
+
+            return bag;
+        }
+
         public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> SkipFoldersListBoxItems, string folder, Action<string, SolidColorBrush> error)
         {
             if (!Directory.Exists(folder))
@@ -21,7 +37,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 error?.Invoke($"Error: The folder \"{folder}\" does not exist. Please try again.", Brushes.Red);
                 return;
             }
-            
+
             if (!string.IsNullOrEmpty(folder))
             {
                 SkipFoldersListBoxItems.Remove(folder);
@@ -49,7 +65,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 return new HasErrorModel(true, $"Error: You must have one external folder path selected. Please try again.");
             }
-            
+
             foreach (string textBoxName in textBoxes.Keys)
             {
                 string externalFolderPath = textBoxes[textBoxName];
@@ -77,7 +93,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     return new HasErrorModel(true, $"Error: Sorry the end of your PC folder: \"{pcFolderPath}\" does not match the end of the folder \"{externalFolderPath}\" on your external drive. Please try again.");
                 }
             }
-            
+
             return new HasErrorModel(false, null);
         }
     }

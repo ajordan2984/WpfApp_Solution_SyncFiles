@@ -267,18 +267,11 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     hf.SetStartingDirectory(PcPath);
                     hf.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
 
-                    string ShortenedPcPath = hf.ShortenedPath(PcPath);
-
-                    ConcurrentBag<string> ConcurrentSkipFoldersListBoxItems = new();
-
-                    foreach (string folder in SkipFoldersListBoxItems)
-                    {
-                        ConcurrentSkipFoldersListBoxItems.Add(folder.Remove(0,ShortenedPcPath.Length));
-                    }
+                    ConcurrentBag<string> ConcurrentSkipFoldersBag = _iec.CreateNewSkipFoldersBag(hf.ShortenedPath(PcPath), SkipFoldersListBoxItems);
 
                     await Task.Run(async () =>
                     {
-                        List<string> allSelectedPcFolders = hf.GetAllDirectories(PcPath, ConcurrentSkipFoldersListBoxItems);
+                        List<string> allSelectedPcFolders = hf.GetAllDirectories(PcPath, ConcurrentSkipFoldersBag);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = hf.GetAllFiles(allSelectedPcFolders);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                         List<Task> tasks = new();
@@ -293,7 +286,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                               {
                                   SyncFilesFromPcToExternalDriveController _main = new(_cts.Token);
                                   _main.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
-                                  _main.SetConcurrentSkipFoldersBag(ConcurrentSkipFoldersListBoxItems);
+                                  _main.SetConcurrentSkipFoldersBag(ConcurrentSkipFoldersBag);
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
                                   _main.SetPaths(pcFolderFromTextBox, externalFolder);
                                   bool completed = _main.SyncFiles();
