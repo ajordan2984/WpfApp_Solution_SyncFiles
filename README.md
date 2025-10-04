@@ -2,7 +2,7 @@
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](#)
 [![Project](https://img.shields.io/badge/project-maintained-blue)](#)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](#)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](#)
 
 ---
 
@@ -44,7 +44,9 @@ This utility makes it simple to back up files from a selected PC folder to one o
 ## 🔓 Version
 ## Compatibility
 
-**v2.1.0** - Windows 7 (64-bit recommended)
+- **v3.0.0** - Windows 10 (64-bit recommended)
+- **v2.1.0** - Windows 7 (64-bit recommended)
+
 Open Source and free to use.
 
 ---
