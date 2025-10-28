@@ -2,7 +2,7 @@
 
 [![Status](https://img.shields.io/badge/status-active-brightgreen)](#)
 [![Project](https://img.shields.io/badge/project-maintained-blue)](#)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue)](#)
+[![Version](https://img.shields.io/badge/version-3.0.1-blue)](#)
 
 ---
 
@@ -35,7 +35,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 > If you want to skip any subfolder inside the selected folder on your PC and external drives, simply select or type the name of the subfolder in the field under **`(Optional) Please add or select the folders from inside the selected PC folder to excluded from backup`** and then click the button **`Add Excluded Folder`**.
 
 > [!NOTE]
-> When skipping a subfolder, any subfolder with either that name or part of that name will be skipped. For example, if you want to skip the **`MyExample`** subfolder, **`MyExample1`**, **`MyExample2`**, **`MyExample3`** will all be skipped as they match part of the name **`MyExample`**. If you would like to change this, you can in the **`GetAllDirectories`**  function.
+> When skipping a subfolder, first the subfolder will be checked to see if it exist. Next, if you're syncing the **`My_Pictures`** folder and want to skip the **`C:\Users\user\Desktop\My_Pictures\Miscellaneous`** subfolder, any file or folder path that contains **`My_Pictures\Miscellaneous`** will be skipped along with any subfolders inside **`Miscellaneous`**.
 
 ✅ You no longer need to manually copy files to every external drive—just update your PC folder, and let the utility sync them all efficiently.
 
@@ -44,7 +44,7 @@ This utility makes it simple to back up files from a selected PC folder to one o
 ## 🔓 Version
 ## Compatibility
 
-- **v3.0.0** - Windows 10 (64-bit recommended)
+- **v3.0.1** - Windows 10 (64-bit recommended)
 - **v2.1.0** - Windows 7 (64-bit recommended)
 
 Open Source and free to use.
