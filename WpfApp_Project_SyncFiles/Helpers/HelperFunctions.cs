@@ -308,7 +308,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             FileInfoHolderModel pcFih = filesFromPcPath[file];
                             FileInfoHolderModel exFih = filesFromExternalDrive[destinationPathForFile];
 
-                            if ((pcFih.Modified - exFih.Modified).TotalSeconds > 1)
+                            if ((pcFih.Modified - exFih.Modified).TotalSeconds > 5)
                             {
                                 filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, false));
 
