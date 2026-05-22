@@ -202,6 +202,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
             else
             {
+                
                 _iec.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedListBoxItem, UpdateTextBlockUI);
             }
         }

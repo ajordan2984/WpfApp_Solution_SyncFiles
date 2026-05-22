@@ -40,12 +40,19 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
             if (!string.IsNullOrEmpty(folder))
             {
-                SkipFoldersListBoxItems.Remove(folder);
-
                 if (add)
                 {
+                    SkipFoldersListBoxItems.Remove(folder);
                     SkipFoldersListBoxItems.Add(folder);
+                    UpdateSkipFoldersListBoxItemsFile(SkipFoldersListBoxItems, folder, true);
                 }
+                else
+                {
+                    SkipFoldersListBoxItems.Remove(folder);
+                    UpdateSkipFoldersListBoxItemsFile(SkipFoldersListBoxItems, folder, false);
+                }
+
+                
             }
         }
 
@@ -54,10 +61,11 @@ namespace WpfApp_Project_SyncFiles.Helpers
             try
             {
                 string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
-                
+
                 if (File.Exists(SavingExcludedPath))
                 {
                     string[] lines = File.ReadAllLines(SavingExcludedPath);
+
                     foreach (string line in lines)
                     {
                         if (!string.IsNullOrEmpty(line) && Directory.Exists(line))
@@ -65,6 +73,39 @@ namespace WpfApp_Project_SyncFiles.Helpers
                             SkipFoldersListBoxItems.Add(line);
                         }
                     }
+                }
+            }
+            catch { }
+        }
+
+        public void UpdateSkipFoldersListBoxItemsFile(ObservableCollection<string> SkipFoldersListBoxItems, string folderToRemove, bool add)
+        {
+            try
+            {
+                string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
+
+                if (File.Exists(SavingExcludedPath))
+                {
+                    using StreamWriter writetext = new(SavingExcludedPath);
+                    foreach (string folder in SkipFoldersListBoxItems)
+                    {
+                        if (add)
+                        {
+                            writetext.WriteLine(folder);
+                        }
+                        else
+                        {
+                            if (folder != folderToRemove)
+                            {
+                                writetext.WriteLine(folder);
+                            }
+                            else
+                            {
+                                writetext.WriteLine(string.Empty);
+                            }
+                        }
+                    }
+                    writetext.Close();
                 }
             }
             catch { }
