@@ -60,6 +60,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _dispatcher = dispatcher;
             _ttbuh = new();
             _iec = new ErrorCheckHelper();
+            _iec.LoadSkipFoldersListBoxItems(SkipFoldersListBoxItems);
             _cts = null;
         }
 

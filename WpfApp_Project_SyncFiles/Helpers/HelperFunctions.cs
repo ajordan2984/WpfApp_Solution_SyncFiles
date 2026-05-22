@@ -560,5 +560,23 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
             }
         }
+
+        public void SaveExcludedPaths(string pathToSkipFoldersFile, ConcurrentBag<string> ConcurrentSkipFoldersBag, string shortPathToFilesOnPc)
+        {
+            try
+            {
+                using StreamWriter writetext = new(pathToSkipFoldersFile);
+                foreach (string file in ConcurrentSkipFoldersBag)
+                {
+                    writetext.WriteLine(shortPathToFilesOnPc + file);
+                }
+                writetext.Close();
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message, Brushes.Red);
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
+            }
+        }
     }
 }

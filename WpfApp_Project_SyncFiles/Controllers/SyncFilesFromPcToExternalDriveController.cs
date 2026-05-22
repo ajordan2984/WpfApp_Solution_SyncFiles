@@ -175,6 +175,27 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _logMessages.Enqueue(DoneWritingChangesFileMsg);
             _updateTextBlockUI(DoneWritingChangesFileMsg, Brushes.Blue);
 
+            // CANCEL SYNCING FILES TO EXTERNAL FOLDER
+            if (_ct.IsCancellationRequested)
+            {
+                _logMessages.Enqueue(userCanceledSyncMsg);
+                _updateTextBlockUI(userCanceledSyncMsg, Brushes.Red);
+                return false;
+            }
+
+            string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
+            //
+            string SavingExcludedPathMsg = $"{DateTime.Now} | Saving all excluded paths on PC to: \"{SavingExcludedPath}\".";
+            _logMessages.Enqueue(SavingExcludedPathMsg);
+            _updateTextBlockUI(SavingExcludedPathMsg, Brushes.Blue);
+            //
+            _hf.SaveExcludedPaths(SavingExcludedPath, _ConcurrentSkipFoldersBag, _shortPathToFilesOnPc);
+            //
+            string DoneWritingExcludedPathMsg = $"{DateTime.Now} | Done saving all excluded paths on PC to: \"{SavingExcludedPath}\".";
+            _logMessages.Enqueue(DoneWritingExcludedPathMsg);
+            _updateTextBlockUI(DoneWritingExcludedPathMsg, Brushes.Blue);
+
+
             return true;
         }
 

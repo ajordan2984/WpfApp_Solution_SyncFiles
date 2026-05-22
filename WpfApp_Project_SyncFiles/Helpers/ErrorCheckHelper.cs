@@ -49,6 +49,27 @@ namespace WpfApp_Project_SyncFiles.Helpers
             }
         }
 
+        public void LoadSkipFoldersListBoxItems(ObservableCollection<string> SkipFoldersListBoxItems)
+        {
+            try
+            {
+                string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
+                
+                if (File.Exists(SavingExcludedPath))
+                {
+                    string[] lines = File.ReadAllLines(SavingExcludedPath);
+                    foreach (string line in lines)
+                    {
+                        if (!string.IsNullOrEmpty(line) && Directory.Exists(line))
+                        {
+                            SkipFoldersListBoxItems.Add(line);
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
         HasErrorModel IErrorCheck.CheckPaths(string pcFolderPath, Dictionary<string, string> textBoxes)
         {
             if (string.IsNullOrEmpty(pcFolderPath))
