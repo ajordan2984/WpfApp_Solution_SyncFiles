@@ -35,6 +35,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private readonly Dispatcher _dispatcher;
         private TrackTextBoxUpdatesHelper _ttbuh;
         private IErrorCheck _iec;
+        private ILoadFavorites _ilf;
         CancellationTokenSource _cts;
         #endregion
 
@@ -45,8 +46,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
-            ManualButtonExcludedPath = new RelayCommand(execute => AddOrRemoveListBoxItem(true));
-            AddExcludedPcPath = new RelayCommand(execute => Browse("ListBoxItemAdd"));
+            ManualButtonExcludedPcPath = new RelayCommand(execute => AddOrRemoveListBoxItem(true));
+            AddExcludedPcPath = new RelayCommand(execute => Browse("SkipFolderListBoxItemAdd"));
             RemoveExcludedPcPath = new RelayCommand(execute => AddOrRemoveListBoxItem(false));
             UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("ExternalFolder1Path"));
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("ExternalFolder2Path"));
@@ -60,7 +61,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _dispatcher = dispatcher;
             _ttbuh = new();
             _iec = new ErrorCheckHelper();
-            _iec.LoadSkipFoldersListBoxItems(SkipFoldersListBoxItems);
+            _ilf = new LoadFavorites();
+            _ilf.LoadSavedListBoxItems(SkipFoldersListBoxItems, $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt");
             _cts = null;
         }
 
@@ -173,7 +175,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         // Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
-        public RelayCommand ManualButtonExcludedPath { get; set; }
+        public RelayCommand ManualButtonExcludedPcPath { get; set; }
         public RelayCommand AddExcludedPcPath { get; set; }
         public RelayCommand RemoveExcludedPcPath { get; set; }
         public RelayCommand UpdateCommandBrowseExternalFolder1 { get; set; }
@@ -197,13 +199,13 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         {
             if (add)
             {
-                _iec.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, ManualTextBoxExcludedPath, UpdateTextBlockUI);
+                _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, ManualTextBoxExcludedPath, UpdateTextBlockUI);
                 ManualTextBoxExcludedPath = string.Empty;
             }
             else
             {
                 
-                _iec.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedListBoxItem, UpdateTextBlockUI);
+                _ilf.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedListBoxItem, UpdateTextBlockUI);
             }
         }
 
@@ -235,8 +237,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     case "ExternalFolder4Path":
                         ExternalFolder4Path = path;
                         break;
-                    case "ListBoxItemAdd":
-                        _iec.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, path, UpdateTextBlockUI);
+                    case "SkipFolderListBoxItemAdd":
+                        _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, path, UpdateTextBlockUI);
                         break;
                     default:
                         MessageBox.Show("An error occured in the Browse function.", "Alert");
@@ -269,7 +271,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     hf.SetStartingDirectory(PcPath);
                     hf.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
 
-                    ConcurrentBag<string> ConcurrentSkipFoldersBag = _iec.CreateNewSkipFoldersBag(hf.ShortenedPath(PcPath), SkipFoldersListBoxItems);
+                    ConcurrentBag<string> ConcurrentSkipFoldersBag = _ilf.CreateNewSkipFoldersBag(hf.ShortenedPath(PcPath), SkipFoldersListBoxItems);
 
                     await Task.Run(async () =>
                     {

@@ -43,7 +43,7 @@
                 Select PC Folder
             </Button>
 
-            <Button Command="{Binding ManualButtonExcludedPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="3">
+            <Button Command="{Binding ManualButtonExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="3">
                 Add Excluded Folder
             </Button>
 

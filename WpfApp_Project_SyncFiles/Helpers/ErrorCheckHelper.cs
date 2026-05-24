@@ -15,21 +15,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
         }
 
-        public ConcurrentBag<string> CreateNewSkipFoldersBag(string ShortenedPcPath, ObservableCollection<string> SkipFoldersListBoxItems)
-        {
-            ConcurrentBag<string> bag = new();
-
-            foreach (string folder in SkipFoldersListBoxItems)
-            {
-                if (folder.Contains(ShortenedPcPath))
-                {
-                    bag.Add(folder.Replace(ShortenedPcPath, ""));
-                }
-            }
-
-            return bag;
-        }
-
         public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> SkipFoldersListBoxItems, string folder, Action<string, SolidColorBrush> error)
         {
             if (!Directory.Exists(folder))
@@ -51,31 +36,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     SkipFoldersListBoxItems.Remove(folder);
                     UpdateSkipFoldersListBoxItemsFile(SkipFoldersListBoxItems, folder, false);
                 }
-
-                
             }
-        }
-
-        public void LoadSkipFoldersListBoxItems(ObservableCollection<string> SkipFoldersListBoxItems)
-        {
-            try
-            {
-                string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
-
-                if (File.Exists(SavingExcludedPath))
-                {
-                    string[] lines = File.ReadAllLines(SavingExcludedPath);
-
-                    foreach (string line in lines)
-                    {
-                        if (!string.IsNullOrEmpty(line) && Directory.Exists(line))
-                        {
-                            SkipFoldersListBoxItems.Add(line);
-                        }
-                    }
-                }
-            }
-            catch { }
         }
 
         public void UpdateSkipFoldersListBoxItemsFile(ObservableCollection<string> SkipFoldersListBoxItems, string folderToRemove, bool add)
