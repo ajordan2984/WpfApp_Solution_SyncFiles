@@ -19,23 +19,26 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="100*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
-                <RowDefinition Height="70*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
+                <RowDefinition Height="90*" />
             </Grid.RowDefinitions>
 
             <!--Buttons-->
@@ -43,57 +46,65 @@
                 Select PC Folder
             </Button>
 
-            <Button Command="{Binding ManualButtonExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="3">
+            <Button Command="{Binding UpdateCommandSavePcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="4">
+                Save PC Folder
+            </Button>
+
+            <Button Command="{Binding UpdateCommandRemovePcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="3" Grid.Row="4">
+                Remove PC Folder
+            </Button>
+
+            <Button Command="{Binding ManualButtonExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="6">
                 Add Excluded Folder
             </Button>
 
-            <Button Command="{Binding AddExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="6">
+            <Button Command="{Binding AddExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="9">
                 Select Excluded Folder
             </Button>
 
-            <Button Command="{Binding RemoveExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="3" Grid.Row="6">
+            <Button Command="{Binding RemoveExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="3" Grid.Row="9">
                 Remove Excluded Folder
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="12">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder1}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="15">
                 Select External Folder 1
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="13">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder2}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="16">
                 Select External Folder 2
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="14">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder3}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="17">
                 Select External Folder 3
             </Button>
 
-            <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="15">
+            <Button Command="{Binding UpdateCommandBrowseExternalFolder4}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="18">
                 Select External Folder 4
             </Button>
 
-            <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="16">
+            <Button Command="{Binding UpdateCommandSyncFiles}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="19">
                 Sync Files
             </Button>
 
-            <Button Command="{Binding UpdateCommandClearLogUI}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="2" Grid.Row="16">
+            <Button Command="{Binding UpdateCommandClearLogUI}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="2" Grid.Row="20">
                 Clear Log
             </Button>
 
-            <Button Command="{Binding UpdateCommandCancelSync}" Grid.Column="3" Grid.Row="16">
+            <Button Command="{Binding UpdateCommandCancelSync}" Grid.Column="3" Grid.Row="21">
                 Cancel Sync
             </Button>
 
             <!--Textboxes-->
             <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                <TextBox Text="Please select a folder from your PC that you would like synced across the external folders" 
+                <TextBox Text="Please select a folder from your PC or from the box below that you would like synced across the external folders" 
                          HorizontalAlignment="Stretch" 
                          VerticalAlignment="Stretch" 
                          TextAlignment="Center"
                          IsReadOnly="True"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2"
+            <Border Style="{StaticResource TextBoxHeader}" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="5"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <TextBox Text="(Optional) Please add or select the folders from inside the selected PC folder to excluded from backup" 
                          HorizontalAlignment="Stretch" 
@@ -107,7 +118,7 @@
                 <TextBox Text="{Binding Path=PcPath}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="3"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="6"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ManualTextBoxExcludedPath}" 
                          IsEnabled="{Binding AreTextBoxesEnabled}" 
@@ -116,36 +127,49 @@
                          ToolTip="Click the &quot;Add Excluded Folder&quot; button once finished typing."/> 
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="12"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="15"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder1Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="13"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="16"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder2Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="14"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="17"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder3Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="15"
+            <Border Style="{StaticResource TextBoxStyle}" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="18"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBox Text="{Binding Path=ExternalFolder4Path}" IsEnabled="{Binding AreTextBoxesEnabled}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </Border>
 
-            <!-- ListBox -->
+            <!-- ListBoxes -->
             <Border Style="{StaticResource TextBlockStyle}" 
                     Grid.Column="0" 
                     Grid.ColumnSpan="5" 
-                    Grid.Row="4"
+                    Grid.Row="2"
                     Grid.RowSpan="2"
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <ListBox ItemsSource="{Binding SkipFoldersListBoxItems}"  SelectedItem="{Binding SelectedListBoxItem, Mode=TwoWay}" ItemContainerStyle="{StaticResource CustomListBoxItemStyle}" />
+                    <ListBox ItemsSource="{Binding SavedFoldersListBoxItems}"  SelectedItem="{Binding SelectedSaveFoldersListBoxItem, Mode=TwoWay}" ItemContainerStyle="{StaticResource CustomListBoxItemStyle}" />
+                </ScrollViewer>
+            </Border>
+
+
+            <Border Style="{StaticResource TextBlockStyle}" 
+                    Grid.Column="0" 
+                    Grid.ColumnSpan="5" 
+                    Grid.Row="7"
+                    Grid.RowSpan="2"
+                    HorizontalAlignment="Stretch" 
+                    VerticalAlignment="Stretch">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ListBox ItemsSource="{Binding SkipFoldersListBoxItems}"  SelectedItem="{Binding SelectedSkipFoldersListBoxItem, Mode=TwoWay}" ItemContainerStyle="{StaticResource CustomListBoxItemStyle}" />
                 </ScrollViewer>
             </Border>
 
@@ -154,7 +178,7 @@
             <Border Style="{StaticResource TextBlockStyle}" 
                     Grid.Column="0" 
                     Grid.ColumnSpan="5" 
-                    Grid.Row="7"
+                    Grid.Row="10"
                     Grid.RowSpan="4"
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch">
@@ -170,7 +194,7 @@
                 IsIndeterminate="True"
                 Grid.Column="0" 
                 Grid.ColumnSpan="5" 
-                Grid.Row="11"
+                Grid.Row="14"
                 Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}" 
              />
 

@@ -28,7 +28,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return bag;
         }
 
-        public void LoadSavedListBoxItems(ObservableCollection<string> TypeOfListBoxItems, string PathToLoad)
+        public void LoadUserSelectedListBoxItems(ObservableCollection<string> TypeOfListBoxItems, string PathToLoad)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             catch { }
         }
 
-        public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> FoldersListBoxItems, string folder, Action<string, SolidColorBrush> error)
+        public void AddOrRemoveListBoxItem(bool add, ObservableCollection<string> UserSelectedListBoxItems, string folder, string pathToFile, Action<string, SolidColorBrush> error)
         {
             if (!Directory.Exists(folder))
             {
@@ -60,47 +60,42 @@ namespace WpfApp_Project_SyncFiles.Helpers
             {
                 if (add)
                 {
-                    FoldersListBoxItems.Remove(folder);
-                    FoldersListBoxItems.Add(folder);
-                    UpdateSavedFoldersListBoxItemsFile(FoldersListBoxItems, folder, true);
+                    UserSelectedListBoxItems.Remove(folder);
+                    UserSelectedListBoxItems.Add(folder);
+                    UpdateSavedFoldersListBoxItemsFile(UserSelectedListBoxItems, folder, true, pathToFile);
                 }
                 else
                 {
-                    FoldersListBoxItems.Remove(folder);
-                    UpdateSavedFoldersListBoxItemsFile(FoldersListBoxItems, folder, false);
+                    UserSelectedListBoxItems.Remove(folder);
+                    UpdateSavedFoldersListBoxItemsFile(UserSelectedListBoxItems, folder, false, pathToFile);
                 }
             }
         }
 
-        public void UpdateSavedFoldersListBoxItemsFile(ObservableCollection<string> SkipFoldersListBoxItems, string folderToRemove, bool add)
+        private void UpdateSavedFoldersListBoxItemsFile(ObservableCollection<string> UserSelectedListBoxItems, string folderToRemove, bool add, string pathToFile)
         {
             try
             {
-                string SavingExcludedPath = $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt";
-
-                if (File.Exists(SavingExcludedPath))
+                using StreamWriter writetext = new(pathToFile);
+                foreach (string folder in UserSelectedListBoxItems)
                 {
-                    using StreamWriter writetext = new(SavingExcludedPath);
-                    foreach (string folder in SkipFoldersListBoxItems)
+                    if (add)
                     {
-                        if (add)
+                        writetext.WriteLine(folder);
+                    }
+                    else
+                    {
+                        if (folder != folderToRemove)
                         {
                             writetext.WriteLine(folder);
                         }
                         else
                         {
-                            if (folder != folderToRemove)
-                            {
-                                writetext.WriteLine(folder);
-                            }
-                            else
-                            {
-                                writetext.WriteLine(string.Empty);
-                            }
+                            writetext.WriteLine(string.Empty);
                         }
                     }
-                    writetext.Close();
                 }
+                writetext.Close();
             }
             catch { }
         }

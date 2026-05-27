@@ -21,7 +21,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
     class MainWindowViewModel : INotifyPropertyChanged
     {
         #region Private Members
-        private string _selectedListBoxItem;
+        private string _selectedSaveFoldersListBoxItem;
+        private string _selectedSkipFoldersListBoxItem;
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
         private bool _isProgressBarRunning;
@@ -32,6 +33,9 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private static string _ExternalFolder3Path;
         private static string _ExternalFolder4Path;
 
+        public static string _userSavedFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}UserSavedFilePaths.txt";
+        public static string _userExcludedFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}UserExcludedFilePaths.txt";
+
         private readonly Dispatcher _dispatcher;
         private TrackTextBoxUpdatesHelper _ttbuh;
         private IErrorCheck _iec;
@@ -41,14 +45,17 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         public MainWindowViewModel(Dispatcher dispatcher)
         {
+            SavedFoldersListBoxItems = new ObservableCollection<string>();
             SkipFoldersListBoxItems = new ObservableCollection<string>();
             Inlines = new ObservableCollection<Inline>();
             _areTextBoxesEnabled = true;
             _areButtonsEnabled = true;
             UpdateCommandBrowsePcPath = new RelayCommand(execute => Browse("PcPath"));
-            ManualButtonExcludedPcPath = new RelayCommand(execute => AddOrRemoveListBoxItem(true));
+            UpdateCommandSavePcPath = new RelayCommand(execute => AddOrRemoveSavedFoldersListBoxItem(true));
+            UpdateCommandRemovePcPath = new RelayCommand(execute => AddOrRemoveSavedFoldersListBoxItem(false));
+            ManualButtonExcludedPcPath = new RelayCommand(execute => AddOrRemoveSkippedFoldersListBoxItem(true));
             AddExcludedPcPath = new RelayCommand(execute => Browse("SkipFolderListBoxItemAdd"));
-            RemoveExcludedPcPath = new RelayCommand(execute => AddOrRemoveListBoxItem(false));
+            RemoveExcludedPcPath = new RelayCommand(execute => AddOrRemoveSkippedFoldersListBoxItem(false));
             UpdateCommandBrowseExternalFolder1 = new RelayCommand(execute => Browse("ExternalFolder1Path"));
             UpdateCommandBrowseExternalFolder2 = new RelayCommand(execute => Browse("ExternalFolder2Path"));
             UpdateCommandBrowseExternalFolder3 = new RelayCommand(execute => Browse("ExternalFolder3Path"));
@@ -62,20 +69,32 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             _ttbuh = new();
             _iec = new ErrorCheckHelper();
             _ilf = new LoadFavorites();
-            _ilf.LoadSavedListBoxItems(SkipFoldersListBoxItems, $"{AppDomain.CurrentDomain.BaseDirectory}ExcludedPaths.txt");
+            _ilf.LoadUserSelectedListBoxItems(SavedFoldersListBoxItems, _userSavedFilePath);
+            _ilf.LoadUserSelectedListBoxItems(SkipFoldersListBoxItems, _userExcludedFilePath);
             _cts = null;
         }
 
         #region XAML Bindings
-        public string SelectedListBoxItem
+
+        public string SelectedSaveFoldersListBoxItem
         {
-            get => _selectedListBoxItem;
+            get => _selectedSaveFoldersListBoxItem;
             set
             {
-                _selectedListBoxItem = value;
-                OnPropertyChanged(nameof(SelectedListBoxItem));
+                _selectedSaveFoldersListBoxItem = value;
+                OnPropertyChanged(nameof(_selectedSaveFoldersListBoxItem));
             }
         }
+        public string SelectedSkipFoldersListBoxItem
+        {
+            get => _selectedSkipFoldersListBoxItem;
+            set
+            {
+                _selectedSkipFoldersListBoxItem = value;
+                OnPropertyChanged(nameof(_selectedSkipFoldersListBoxItem));
+            }
+        }
+        public ObservableCollection<string> SavedFoldersListBoxItems { get; set; }
         public ObservableCollection<string> SkipFoldersListBoxItems { get; set; }
         public ObservableCollection<Inline> Inlines { get; }
         public bool AreTextBoxesEnabled
@@ -175,6 +194,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         // Button Clicks
         public RelayCommand UpdateCommandBrowsePcPath { get; set; }
+        public RelayCommand UpdateCommandSavePcPath { get; set; }
+        public RelayCommand UpdateCommandRemovePcPath { get; set; }
         public RelayCommand ManualButtonExcludedPcPath { get; set; }
         public RelayCommand AddExcludedPcPath { get; set; }
         public RelayCommand RemoveExcludedPcPath { get; set; }
@@ -195,17 +216,30 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void AddOrRemoveListBoxItem(bool add)
+        public void AddOrRemoveSavedFoldersListBoxItem(bool add)
         {
             if (add)
             {
-                _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, ManualTextBoxExcludedPath, UpdateTextBlockUI);
+                _ilf.AddOrRemoveListBoxItem(true, SavedFoldersListBoxItems, PcPath, _userSavedFilePath, UpdateTextBlockUI);
+            }
+            else
+            {
+
+                _ilf.AddOrRemoveListBoxItem(false, SavedFoldersListBoxItems, SelectedSaveFoldersListBoxItem, _userSavedFilePath, UpdateTextBlockUI);
+            }
+        }
+
+        public void AddOrRemoveSkippedFoldersListBoxItem(bool add)
+        {
+            if (add)
+            {
+                _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, ManualTextBoxExcludedPath, _userExcludedFilePath, UpdateTextBlockUI);
                 ManualTextBoxExcludedPath = string.Empty;
             }
             else
             {
                 
-                _ilf.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedListBoxItem, UpdateTextBlockUI);
+                _ilf.AddOrRemoveListBoxItem(false, SkipFoldersListBoxItems, SelectedSkipFoldersListBoxItem, _userExcludedFilePath, UpdateTextBlockUI);
             }
         }
 
@@ -238,7 +272,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                         ExternalFolder4Path = path;
                         break;
                     case "SkipFolderListBoxItemAdd":
-                        _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, path, UpdateTextBlockUI);
+                        _ilf.AddOrRemoveListBoxItem(true, SkipFoldersListBoxItems, path, _userExcludedFilePath, UpdateTextBlockUI);
                         break;
                     default:
                         MessageBox.Show("An error occured in the Browse function.", "Alert");
