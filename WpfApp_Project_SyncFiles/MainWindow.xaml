@@ -156,7 +156,7 @@
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <ListBox ItemsSource="{Binding SavedFoldersListBoxItems}"  SelectedItem="{Binding SelectedSaveFoldersListBoxItem, Mode=TwoWay}" ItemContainerStyle="{StaticResource CustomListBoxItemStyle}" />
+                    <ListBox ItemsSource="{Binding SavedFoldersListBoxItems}"  SelectedItem="{Binding PcPath, Mode=TwoWay}" ItemContainerStyle="{StaticResource CustomListBoxItemStyle}" />
                 </ScrollViewer>
             </Border>
 

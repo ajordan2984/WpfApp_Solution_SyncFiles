@@ -52,7 +52,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
         {
             if (!Directory.Exists(folder))
             {
-                error?.Invoke($"Error: The folder \"{folder}\" does not exist. Please try again.", Brushes.Red);
+                error?.Invoke($"Error: Either the folder \"{folder}\" does not exist or you have not selected it from the listbox. Please try again.", Brushes.Red);
                 return;
             }
 

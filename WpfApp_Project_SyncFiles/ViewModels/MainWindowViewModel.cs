@@ -21,7 +21,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
     class MainWindowViewModel : INotifyPropertyChanged
     {
         #region Private Members
-        private string _selectedSaveFoldersListBoxItem;
         private string _selectedSkipFoldersListBoxItem;
         private bool _areTextBoxesEnabled;
         private bool _areButtonsEnabled;
@@ -75,16 +74,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         }
 
         #region XAML Bindings
-
-        public string SelectedSaveFoldersListBoxItem
-        {
-            get => _selectedSaveFoldersListBoxItem;
-            set
-            {
-                _selectedSaveFoldersListBoxItem = value;
-                OnPropertyChanged(nameof(_selectedSaveFoldersListBoxItem));
-            }
-        }
         public string SelectedSkipFoldersListBoxItem
         {
             get => _selectedSkipFoldersListBoxItem;
@@ -225,7 +214,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             else
             {
 
-                _ilf.AddOrRemoveListBoxItem(false, SavedFoldersListBoxItems, SelectedSaveFoldersListBoxItem, _userSavedFilePath, UpdateTextBlockUI);
+                _ilf.AddOrRemoveListBoxItem(false, SavedFoldersListBoxItems, PcPath, _userSavedFilePath, UpdateTextBlockUI);
             }
         }
 
