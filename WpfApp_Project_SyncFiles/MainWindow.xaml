@@ -47,11 +47,11 @@
             </Button>
 
             <Button Command="{Binding UpdateCommandSavePcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="1" Grid.Row="4">
-                Save PC Folder
+                Save Favorite PC Folder
             </Button>
 
             <Button Command="{Binding UpdateCommandRemovePcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="3" Grid.Row="4">
-                Remove PC Folder
+                Remove Favorite PC Folder
             </Button>
 
             <Button Command="{Binding ManualButtonExcludedPcPath}" IsEnabled="{Binding AreButtonsEnabled}" Grid.Column="0" Grid.Row="6">
