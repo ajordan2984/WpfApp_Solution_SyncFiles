@@ -11,6 +11,8 @@ namespace WpfApp_Project_SyncFiles.Controllers
 {
     public class SyncFilesFromPcToExternalDriveController
     {
+        private Action<long> _updateProgressBarOnUI;
+
         private Action<string, SolidColorBrush> _updateTextBlockUI;
         private ConcurrentQueue<string> _logMessages;
 
@@ -36,6 +38,11 @@ namespace WpfApp_Project_SyncFiles.Controllers
             _hf = new HelperFunctions(_ct, _logMessages);
         }
         
+        public void SetUpdateProgressBarOnUI(Action<long> updateProgressBarOnUI)
+        {
+            _updateProgressBarOnUI = updateProgressBarOnUI;
+        }
+
         public void SetUpdateTextBlockOnUI(Action<string, SolidColorBrush> updateTextBlockUI)
         {
             _updateTextBlockUI = updateTextBlockUI;
@@ -102,7 +109,8 @@ namespace WpfApp_Project_SyncFiles.Controllers
                 _allSortedFilesFromPcPath,
                 _allFilesFromFromExternalDrive,
                 _shortPathToFilesOnPc,
-                _shortPathToFilesOnExternal);
+                _shortPathToFilesOnExternal,
+                _updateProgressBarOnUI);
             
             if (filesCopied > 0)
             {

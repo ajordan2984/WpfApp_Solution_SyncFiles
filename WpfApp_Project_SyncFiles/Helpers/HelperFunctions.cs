@@ -293,7 +293,8 @@ namespace WpfApp_Project_SyncFiles.Helpers
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromPcPath,
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
             string shortPathToFilesOnPc,
-            string shortPathToFilesOnExternal)
+            string shortPathToFilesOnExternal,
+            Action<long> _updateProgressBarOnUI)
         {
             long filesCopied = 0;
             try
@@ -315,7 +316,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                         if (!filesFromExternalDrive.ContainsKey(destinationPathForFile))
                         {
-                            filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, true));
+                            filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, true, filesFromPcPath[file].FileSize));
 
                             // Update that the file has been added so it reflects in the "Changes.txt" file
                             FileInfo fi = new(file);
@@ -329,7 +330,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                             if ((pcFih.Modified - exFih.Modified).TotalSeconds > 5)
                             {
-                                filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, false));
+                                filesToCopy.Add(new IsNewFileModel(file, destinationPathForFile, false, filesFromPcPath[file].FileSize));
 
                                 // Update that the file has changed so it reflects in the "Changes.txt" file
                                 FileInfo fi = new(file);
@@ -372,7 +373,10 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       try
                       {
                           File.Copy(ftc.FileSource, ftc.FileDestination, true);
-                          
+
+                          _updateProgressBarOnUI(ftc.FileSize);
+
+
                           if (ftc.NewFile)
                           {
                               _logMessages.Enqueue($"{DateTime.Now} | Copying New File From: {ftc.FileSource}{Environment.NewLine}To: {ftc.FileDestination}.");

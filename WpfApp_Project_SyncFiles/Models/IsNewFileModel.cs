@@ -6,6 +6,7 @@ namespace WpfApp_Project_SyncFiles.Models
         private string _fileSource;
         private string _fileDestination;
         private bool _newFile;
+        private long _fileSize;
         
         public string FileSource
         {
@@ -22,11 +23,17 @@ namespace WpfApp_Project_SyncFiles.Models
             get => _newFile;
         }
 
-        public IsNewFileModel(string fileSource, string fileDestination, bool newFile)
+        public long FileSize
+        {
+            get => _fileSize;
+        }
+
+        public IsNewFileModel(string fileSource, string fileDestination, bool newFile, long fileSize)
         {
             _fileSource = fileSource;
             _fileDestination = fileDestination;
             _newFile = newFile;
+            _fileSize = fileSize;
         }
     }
 }

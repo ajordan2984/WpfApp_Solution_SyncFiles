@@ -28,8 +28,8 @@ namespace WpfApp_Project_SyncFiles.ViewModels
 
         #region Status Bar Progress
         private long _totalItems;
-        private int _progressBarValue;
-        private int _completedItems;
+        private long _progressBarValue;
+        private long _completedItems;
         #endregion
 
         private static string _PcPath;
@@ -129,7 +129,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                 }
             }
         }
-        public int ProgressBarValue
+        public long ProgressBarValue
         {
             get
             {
@@ -334,6 +334,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                               Task.Run(() =>
                               {
                                   SyncFilesFromPcToExternalDriveController _main = new(_cts.Token);
+                                  _main.SetUpdateProgressBarOnUI(UpdateProgressBar);
                                   _main.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
                                   _main.SetConcurrentSkipFoldersBag(ConcurrentSkipFoldersBag);
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
@@ -439,7 +440,7 @@ namespace WpfApp_Project_SyncFiles.ViewModels
             }
         }
 
-        public void IncrementProgress(int CompletedItems)
+        public void UpdateProgressBar(long CompletedItems)
         {
             try
             {
