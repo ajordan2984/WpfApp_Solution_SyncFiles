@@ -191,12 +191,20 @@
                 Height="20"
                 Width="auto"
                 Margin="5,0,5,5"
-                IsIndeterminate="True"
                 Grid.Column="0" 
                 Grid.ColumnSpan="5" 
                 Grid.Row="14"
-                Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}" 
-             />
+                Visibility="{Binding IsProgressBarRunning, Converter={StaticResource BoolToVisibilityConverter}}"
+                Value="{Binding ProgressBarValue}"
+                Name="ProgressBarStatus"/>
+            <TextBlock 
+                Text="{Binding ElementName=ProgressBarStatus,Path=Value,StringFormat={}{0:0}%}" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                RenderTransformOrigin="4.022,0.611" 
+                Width="23"
+                Grid.Row="14"
+                Grid.ColumnSpan="5"/>
 
         </Grid>
     </ScrollViewer>

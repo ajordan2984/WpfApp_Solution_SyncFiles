@@ -60,6 +60,24 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return shortenedPath.TrimEnd('\\');
         }
 
+        public long CalculateTotalFileSize(ConcurrentDictionary<string, FileInfoHolderModel> files)
+        {
+            long totalSize = 0;
+            try
+            {
+                foreach (var file in files.Values)
+                {
+                    totalSize += file.FileSize;
+                }
+            }
+            catch (Exception ex)
+            {
+                _updateTextBlockUI(ex.Message, Brushes.Red);
+                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
+            }
+            return totalSize;
+        }
+
         public ConcurrentDictionary<string, FileInfoHolderModel> CheckForChanges(string pathToChangesFile, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             ConcurrentDictionary<string, FileInfoHolderModel> files = new();
@@ -75,14 +93,15 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
 
-                    for (int i = 0; i < lines.Length - 1; i += 2)
+                    for (int i = 0; i < lines.Length - 1; i += 3)
                     {
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
                         string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
+                        string fileSize = lines[i + 2];
 
                         if (!ConcurrentSkipFoldersBag.Any(substring => filePathOnExternal.Contains(substring)))
                         {
-                            FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]));
+                            FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]), long.Parse(fileSize));
 
                             files.TryAdd(filePathOnExternal, fih);
                         }
@@ -259,7 +278,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 foreach (string file in files)
                 {
                     FileInfo fi = new(file);
-                    FileInfoHolderModel fih = new(file, fi.LastWriteTime.ToUniversalTime());
+                    FileInfoHolderModel fih = new(file, fi.LastWriteTime.ToUniversalTime(), fi.Length);
                     bagOfAllFiles.Add(fih);
                 }
             }
@@ -300,7 +319,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                             // Update that the file has been added so it reflects in the "Changes.txt" file
                             FileInfo fi = new(file);
-                            FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc);
+                            FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc, fi.Length);
                             filesFromExternalDrive.TryAdd(destinationPathForFile, fihm);
                         }
                         else
@@ -314,7 +333,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
 
                                 // Update that the file has changed so it reflects in the "Changes.txt" file
                                 FileInfo fi = new(file);
-                                FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc);
+                                FileInfoHolderModel fihm = new(destinationPathForFile, fi.LastWriteTimeUtc, fi.Length);
 
                                 if (filesFromExternalDrive.TryRemove(destinationPathForFile, out _))
                                 {
