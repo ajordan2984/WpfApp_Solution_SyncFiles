@@ -60,24 +60,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
             return shortenedPath.TrimEnd('\\');
         }
 
-        public long CalculateTotalFileSize(ConcurrentDictionary<string, FileInfoHolderModel> files)
-        {
-            long totalSize = 0;
-            try
-            {
-                foreach (var file in files.Values)
-                {
-                    totalSize += file.FileSize;
-                }
-            }
-            catch (Exception ex)
-            {
-                _updateTextBlockUI(ex.Message, Brushes.Red);
-                _logMessages.Enqueue($"{DateTime.Now} | {ex.Message}");
-            }
-            return totalSize;
-        }
-
         public ConcurrentDictionary<string, FileInfoHolderModel> CheckForChanges(string pathToChangesFile, ConcurrentBag<string> ConcurrentSkipFoldersBag)
         {
             ConcurrentDictionary<string, FileInfoHolderModel> files = new();
@@ -90,19 +72,27 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     _updateTextBlockUI(FileFoundMsg, Brushes.Blue);
                     _logMessages.Enqueue(FileFoundMsg);
 
-                    string newPathRoot = Path.GetPathRoot(pathToChangesFile);
+                   string newPathRoot = Path.GetPathRoot(pathToChangesFile);
                     string[] lines = File.ReadAllLines(pathToChangesFile);
+                    int jumpInArrayBy = 0;
 
-                    for (int i = 0; i < lines.Length - 1; i += 3)
+                    if (long.TryParse(lines[2], out long fileSize))
+                    {
+                        jumpInArrayBy = 3;
+                    }
+                    else
+                    {
+                        jumpInArrayBy = 2;
+                    }
+
+                    for (int i = 0; i < lines.Length - 1; i += jumpInArrayBy)
                     {
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
                         string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
-                        string fileSize = lines[i + 2];
 
-                        if (!ConcurrentSkipFoldersBag.Any(substring => filePathOnExternal.Contains(substring)))
+                    if (!ConcurrentSkipFoldersBag.Any(substring => filePathOnExternal.Contains(substring)))
                         {
-                            FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]), long.Parse(fileSize));
-
+                            FileInfoHolderModel fih = new(filePathOnExternal, DateTime.Parse(lines[i + 1]), new FileInfo(lines[i]).Length);
                             files.TryAdd(filePathOnExternal, fih);
                         }
                     }
@@ -293,8 +283,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromPcPath,
             ConcurrentDictionary<string, FileInfoHolderModel> filesFromExternalDrive,
             string shortPathToFilesOnPc,
-            string shortPathToFilesOnExternal,
-            Action<long> _updateProgressBarOnUI)
+            string shortPathToFilesOnExternal)
         {
             long filesCopied = 0;
             try
@@ -373,9 +362,6 @@ namespace WpfApp_Project_SyncFiles.Helpers
                       try
                       {
                           File.Copy(ftc.FileSource, ftc.FileDestination, true);
-
-                          _updateProgressBarOnUI(ftc.FileSize);
-
 
                           if (ftc.NewFile)
                           {
@@ -558,6 +544,7 @@ namespace WpfApp_Project_SyncFiles.Helpers
                 {
                     writetext.WriteLine(file.Key);
                     writetext.WriteLine(file.Value.Modified);
+                    writetext.WriteLine(file.Value.FileSize);
                 }
                 writetext.Close();
             }

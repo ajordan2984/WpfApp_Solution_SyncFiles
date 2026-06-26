@@ -26,12 +26,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
         private bool _areButtonsEnabled;
         private bool _isProgressBarRunning;
 
-        #region Status Bar Progress
-        private long _totalItems;
-        private long _progressBarValue;
-        private long _completedItems;
-        #endregion
-
         private static string _PcPath;
         private static string _ManualTextBoxExcludedPath;
         private static string _ExternalFolder1Path;
@@ -127,18 +121,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                     _isProgressBarRunning = value;
                     OnPropertyChanged(nameof(IsProgressBarRunning));
                 }
-            }
-        }
-        public long ProgressBarValue
-        {
-            get
-            {
-                return _progressBarValue;
-            }
-            set
-            {
-                _progressBarValue = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ProgressBarValue)));
             }
         }
         public string PcPath
@@ -321,8 +303,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                         ConcurrentDictionary<string, FileInfoHolderModel> allSelectedPcFiles = hf.GetAllFiles(allSelectedPcFolders);
                         ConcurrentDictionary<string, FileInfoHolderModel> allSeclectedPcFilesForTasks = new(allSelectedPcFiles);
                         
-                        _totalItems = hf.CalculateTotalFileSize(allSelectedPcFiles);
-
                         List<Task> tasks = new();
 
                         foreach (string folderTextBoxKey in _ttbuh.ExternalFoldersSelected.Keys)
@@ -334,7 +314,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                               Task.Run(() =>
                               {
                                   SyncFilesFromPcToExternalDriveController _main = new(_cts.Token);
-                                  _main.SetUpdateProgressBarOnUI(UpdateProgressBar);
                                   _main.SetUpdateTextBlockOnUI(UpdateTextBlockUI);
                                   _main.SetConcurrentSkipFoldersBag(ConcurrentSkipFoldersBag);
                                   _main.SetAllSortedFilesFromPcPath(allSeclectedPcFilesForTasks);
@@ -433,32 +412,6 @@ namespace WpfApp_Project_SyncFiles.ViewModels
                       Run run = new(text) { Foreground = textColor };
                       Inlines.Add(run);
                   }));
-            }
-            catch (Exception ex)
-            {
-                UpdateTextBlockUI(ex.Message, Brushes.Red);
-            }
-        }
-
-        public void UpdateProgressBar(long CompletedItems)
-        {
-            try
-            {
-                _ = _dispatcher.BeginInvoke(new Action(() =>
-                {
-                    _completedItems += CompletedItems;
-
-                    if (_completedItems == _totalItems)
-                    {
-                        ProgressBarValue = 100;
-                    }
-                    else
-                    {
-                        float completedItemsFloat = _completedItems;
-                        float totalItemsFloat = _totalItems;
-                        ProgressBarValue = (int)((completedItemsFloat / totalItemsFloat) * 100);
-                    }
-                }));
             }
             catch (Exception ex)
             {

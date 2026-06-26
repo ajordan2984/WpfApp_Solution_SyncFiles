@@ -75,7 +75,7 @@
                     <Border Name="Border"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"> 
+                        BorderThickness="{TemplateBinding BorderThickness}">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
