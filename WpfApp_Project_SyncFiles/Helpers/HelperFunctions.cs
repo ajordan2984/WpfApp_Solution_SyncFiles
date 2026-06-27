@@ -73,19 +73,9 @@ namespace WpfApp_Project_SyncFiles.Helpers
                     _logMessages.Enqueue(FileFoundMsg);
 
                    string newPathRoot = Path.GetPathRoot(pathToChangesFile);
-                    string[] lines = File.ReadAllLines(pathToChangesFile);
-                    int jumpInArrayBy = 0;
+                   string[] lines = File.ReadAllLines(pathToChangesFile);
 
-                    if (long.TryParse(lines[2], out long fileSize))
-                    {
-                        jumpInArrayBy = 3;
-                    }
-                    else
-                    {
-                        jumpInArrayBy = 2;
-                    }
-
-                    for (int i = 0; i < lines.Length - 1; i += jumpInArrayBy)
+                    for (int i = 0; i < lines.Length - 2; i += 3)
                     {
                         string oldPathRoot = Path.GetPathRoot(lines[i]);
                         string filePathOnExternal = lines[i].Replace(oldPathRoot, newPathRoot);
